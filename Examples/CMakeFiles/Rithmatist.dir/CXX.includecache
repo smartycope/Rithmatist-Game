@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/skipper/hello/C++/Rithmatist Game/Examples/Color.hpp
+
+/home/skipper/hello/C++/Rithmatist Game/Examples/Line.cpp
+Line.hpp
+/home/skipper/hello/C++/Rithmatist Game/Examples/Line.hpp
+
+/home/skipper/hello/C++/Rithmatist Game/Examples/Line.hpp
+vector
+-
+array
+-
+algorithm
+-
+GL/glew.h
+-
+SDL2/SDL_opengl.h
+-
+Point.hpp
+/home/skipper/hello/C++/Rithmatist Game/Examples/Point.hpp
+Color.hpp
+/home/skipper/hello/C++/Rithmatist Game/Examples/Color.hpp
+
+/home/skipper/hello/C++/Rithmatist Game/Examples/Point.hpp
+iostream
+-
+array
+-
+algorithm
+-
+

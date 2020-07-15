@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/Rithmatist.dir/Line.cpp.o CMakeFiles/Rithmatist.dir/Point.cpp.o CMakeFiles/Rithmatist.dir/Color.cpp.o CMakeFiles/Rithmatist.dir/main.cpp.o  -o Rithmatist 
