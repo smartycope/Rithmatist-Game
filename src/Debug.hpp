@@ -28,7 +28,7 @@ public:
             std::cout << ++debugCount << ": " << message << std::endl;
     }
 
-    void printVector(const vector<float>& v, int itemsPerLine = -1, int spacing = 10){
+    void printVector(const std::vector<float>& v, int itemsPerLine = -1, int spacing = 10){
         std::cout << "\n";
         int count = 1;
         for (auto i: v){
@@ -44,7 +44,7 @@ public:
         std::cout << "\n";
     }
 
-    void printVector(const vector<int>& v, int itemsPerLine = -1, int spacing = 10){
+    void printVector(const std::vector<int>& v, int itemsPerLine = -1, int spacing = 10){
         std::cout << "\n";
         int count = 1;
         for (auto i: v){
@@ -60,7 +60,7 @@ public:
         std::cout << "\n";
     }
 
-    void printVector(const vector<Point>& v, int itemsPerLine = -1, int spacing = 10){
+    void printVector(const std::vector<Point>& v, int itemsPerLine = -1, int spacing = 10){
         std::cout << "\n";
         int count = 1;
         for (auto i: v){

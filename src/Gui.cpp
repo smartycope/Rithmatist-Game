@@ -2,7 +2,7 @@
 // #include "Debug.hpp"
 // Debug d;
 // #include "LineForbiddence.hpp"
-
+using std::vector;
 // this line is intelligent
 #define GLSL(src) "#version 330 core\n" #src 
 
@@ -81,10 +81,12 @@ void Gui::createLines(){
 
     auto l = arena.getLineVertices().data();
 
+    //std::vector<float> l = arena.getLineVertices();
     // float result[l.size()];
     // std::copy(std::begin(l), std::end(l), result);
     
     glBufferData(GL_ARRAY_BUFFER, sizeof(l), l, GL_STATIC_DRAW);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(result), result, GL_STATIC_DRAW);
     
 
     // vbos.push_back(vbo);

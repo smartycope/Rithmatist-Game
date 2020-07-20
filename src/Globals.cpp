@@ -9,7 +9,7 @@ void log(std::string message, unsigned int verbosity){
         std::cout << ++debugCount << ": " << message << std::endl;
 }
 
-void printVector(const vector<float>& v, int itemsPerLine, int spacing){
+void printVector(const std::vector<float>& v, int itemsPerLine, int spacing){
     std::cout << "\n";
     int count = 1;
     for (auto i: v){
@@ -25,7 +25,7 @@ void printVector(const vector<float>& v, int itemsPerLine, int spacing){
     std::cout << "\n";
 }
 
-void printVector(const vector<int>& v, int itemsPerLine, int spacing){
+void printVector(const std::vector<int>& v, int itemsPerLine, int spacing){
     std::cout << "\n";
     int count = 1;
     for (auto i: v){
@@ -41,7 +41,7 @@ void printVector(const vector<int>& v, int itemsPerLine, int spacing){
     std::cout << "\n";
 }
 
-void printVector(const vector<Point>& v, int itemsPerLine, int spacing){
+void printVector(const std::vector<Point>& v, int itemsPerLine, int spacing){
     std::cout << "\n";
     int count = 1;
     for (auto i: v){

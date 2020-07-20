@@ -1,11 +1,11 @@
 #include "Arena.hpp"
 // #include "Debug.hpp"
 
-vector<float> Arena::getLineVertices(){
-    vector<float> mainVertices;
+std::vector<float> Arena::getLineVertices(){
+   std::vector<float> mainVertices;
 
     for (auto p: players){
-        vector<float> tmp = p.getVertices();
+       std::vector<float> tmp = p.getVertices();
 
             for (auto k: tmp)
                 mainVertices.push_back(k);

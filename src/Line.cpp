@@ -18,13 +18,13 @@ void Line::finish(Point end){
     this->end = end;
 }
 
-void Line::finish(Point end, const vector<Point>& data){
+void Line::finish(Point end, const std::vector<Point>& data){
     this->end = end;
     lineData = data;
 }
 
-vector<Point> Line::getData(){
-    // vector<Point> tmp = lineData;
+std::vector<Point> Line::getData(){
+    //std::vector<Point> tmp = lineData;
 
     // g::printVector(lineData);
     // g::printVector(tmp);

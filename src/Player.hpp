@@ -18,5 +18,5 @@ public:
     Player(): lineColor(Color(DRAW_COLOR)), breached(false), name("___") {};
     Player(std::string name): lineColor(Color(DRAW_COLOR)), breached(false), name(name) {};
 
-    vector<float> getVertices();
+   std::vector<float> getVertices();
 };

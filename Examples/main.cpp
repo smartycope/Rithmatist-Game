@@ -13,7 +13,7 @@ int main(){
     Point five(485, 300);
     Point six(300, 485);
 
-    // vector<Point> testVector = {one, two, three, four, five, six};
+    //std::vector<Point> testVector = {one, two, three, four, five, six};
     two.print();
     std::cout << "\n";
     two.convCenter().print();

@@ -1,12 +1,12 @@
 #include "Player.hpp"
 // #include "Debug.hpp"
 
-vector<float> Player::getVertices(){
-    vector<float> returnArray;
+std::vector<float> Player::getVertices(){
+   std::vector<float> returnArray;
     int i = 0;
 
     for(auto l: lines){
-        vector<Point> data = l.getData();
+       std::vector<Point> data = l.getData();
         for (i = 0; i < data.size(); ++i){
             auto pointArray = data[i].getVector();
             // std::cout << pointArray[0] << ", " << pointArray[1] << "\n";

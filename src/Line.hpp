@@ -23,21 +23,21 @@ private:
 public:
     Point start;
     Point end;
-    vector<Point> lineData;     // all the stuff in the middle
+   std::vector<Point> lineData;     // all the stuff in the middle
     bool isFinished;
     // Color lineColor;
 
     Line(Point start = Point()): start(start), isFinished(false) {};
     Line(Point start, Point end): start(start), end(end), isFinished(true) {};
-    Line(Point start, Point end, const vector<Point>& data): start(start), end(end), lineData(data), isFinished(true) {};
+    Line(Point start, Point end, const std::vector<Point>& data): start(start), end(end), lineData(data), isFinished(true) {};
     // Line(vector<Point>* dataP): lineDataP(dataP) {};
 
     void draw();
     Line identifyLine(Line line);
     void finish(Point end);
-    void finish(Point end, const vector<Point>& data);
+    void finish(Point end, const std::vector<Point>& data);
     int  getDataLen();
-    // vector<float> vertex(vector<Point>& data);
-    vector<Point> getData();
-    // vector<float
+    //std::vector<float> vertex(vector<Point>& data);
+   std::vector<Point> getData();
+    //std::vector<float
 };

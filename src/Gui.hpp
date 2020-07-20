@@ -22,13 +22,15 @@
 // #include "Color.hpp"
 #include "Globals.hpp"
 
+using std::vector;
+
 class Gui{
 private:
     Arena arena;
     Color drawColor;
     GLint colorLoc;
 
-    // vector<int> indecies;
+    //std::vector<int> indecies;
     Point windowPosition;
     SDL_Window* window;
     SDL_GLContext context;

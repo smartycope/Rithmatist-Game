@@ -5,6 +5,8 @@
 #include "Player.hpp"
 #include "Globals.hpp"
 
+using std::vector;
+
 class Arena{
 private:
 public:
@@ -17,5 +19,5 @@ public:
         players.push_back(defualtPlayer); 
     };
 
-    vector<float> getLineVertices();
+   std::vector<float> getLineVertices();
 };
