@@ -12,8 +12,8 @@
 
 #include "Globals.hpp"
 
-using std::vector;
-using std::array;
+// using std::vector;
+// using std::array;
 
 class Line{
 private:

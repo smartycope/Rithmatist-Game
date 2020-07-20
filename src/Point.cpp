@@ -9,12 +9,12 @@ float Point::round(float var, int digits) {
     return float(value / (digits * 10));
 }
 
-array<float, 2> Point::getVector(){
+std::array<float, 2> Point::getVector(){
     // Point tmp(x, y);
     // tmp.convCenter();
     Point tmp = this->convCenter();
 
-    array<float, 2> tmpArray = {float(tmp.x) / (float(width) / 2.0f), (float(tmp.y) / (float(height) / 2.0f)) * -1};
+    std::array<float, 2> tmpArray = {float(tmp.x) / (float(width) / 2.0f), (float(tmp.y) / (float(height) / 2.0f)) * -1};
     return tmpArray;
 }
 

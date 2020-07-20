@@ -6,7 +6,7 @@
 #include <algorithm>
 
 // using std::vector;
-using std::array;
+// using std::array;
 
 // Defualt origin is top-left corner of the window!!!
 
@@ -25,7 +25,7 @@ public:
     Point(int x, int y): x(x), y(y) {};
 
     void print();
-    array<float, 2> getVector();
+    std::array<float, 2> getVector();
     Point convCenter();
     Point convTopLeft();
 };
