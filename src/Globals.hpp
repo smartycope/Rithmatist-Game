@@ -4,9 +4,8 @@
 #include <any>
 #include <iomanip>
 #include "Point.hpp"
-
-using std::vector;
-
+#include <vector>
+#include <string>
 #define RAD2DEG 56.54866776;
 #define verbose 4
 
@@ -25,9 +24,9 @@ namespace g{
 
 void log(std::string message, unsigned int verbosity = verbose);
 
-void printVector(const vector<float>& v, int itemsPerLine = -1, int spacing = 10);
+void printVector(const std::vector<float>& v, int itemsPerLine = -1, int spacing = 10);
 
-void printVector(const vector<int>& v, int itemsPerLine = -1, int spacing = 10);
+void printVector(const std::vector<int>& v, int itemsPerLine = -1, int spacing = 10);
 
-void printVector(const vector<Point>& v, int itemsPerLine = -1, int spacing = 10);
+void printVector(const std::vector<Point>& v, int itemsPerLine = -1, int spacing = 10);
 } // namespace g

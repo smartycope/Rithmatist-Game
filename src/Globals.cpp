@@ -9,8 +9,8 @@ void log(std::string message, unsigned int verbosity){
         std::cout << ++debugCount << ": " << message << std::endl;
 }
 
-void printVector(const vector<float>& v, int itemsPerLine, int spacing){
-    std::cout << "\n";
+void printVector(const std::vector<float>& v, int itemsPerLine, int spacing){
+  /*    std::cout << "\n";
     int count = 1;
     for (auto i: v){
         if ((count % itemsPerLine) or itemsPerLine == -1){
@@ -22,11 +22,11 @@ void printVector(const vector<float>& v, int itemsPerLine, int spacing){
             ++count;
         }
     }
-    std::cout << "\n";
+    std::cout << "\n";*/
 }
 
-void printVector(const vector<int>& v, int itemsPerLine, int spacing){
-    std::cout << "\n";
+void printVector(const std::vector<int>& v, int itemsPerLine, int spacing){
+  /*    std::cout << "\n";
     int count = 1;
     for (auto i: v){
         if ((count % itemsPerLine) or itemsPerLine == -1){
@@ -38,11 +38,11 @@ void printVector(const vector<int>& v, int itemsPerLine, int spacing){
             ++count;
         }
     }
-    std::cout << "\n";
+    std::cout << "\n";*/
 }
 
-void printVector(const vector<Point>& v, int itemsPerLine, int spacing){
-    std::cout << "\n";
+void printVector(const std::vector<Point>& v, int itemsPerLine, int spacing){
+  /*    std::cout << "\n";
     int count = 1;
     for (auto i: v){
         if ((count % itemsPerLine) or itemsPerLine == -1){
@@ -54,6 +54,6 @@ void printVector(const vector<Point>& v, int itemsPerLine, int spacing){
             ++count;
         }
     }
-    std::cout << "\n";
+    std::cout << "\n";*/
 }
 } // namespace g
