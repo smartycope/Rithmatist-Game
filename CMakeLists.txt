@@ -22,7 +22,8 @@ set(SRC_LIST
     ${CMAKE_SOURCE_DIR}/src/LineMaking.cpp
     ${CMAKE_SOURCE_DIR}/src/LineVigor.cpp
     ${CMAKE_SOURCE_DIR}/src/LineWarding.cpp
-    ${CMAKE_SOURCE_DIR}/src/Debug.hpp
+    #${CMAKE_SOURCE_DIR}/src/Debug.hpp
+    ${CMAKE_SOURCE_DIR}/src/Globals.cpp
     ${CMAKE_SOURCE_DIR}/src/Point.cpp
     ${CMAKE_SOURCE_DIR}/src/Color.cpp
     ${CMAKE_SOURCE_DIR}/src/Player.cpp

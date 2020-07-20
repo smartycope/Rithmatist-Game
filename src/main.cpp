@@ -1,5 +1,6 @@
-#include "Debug.hpp"
-Debug d;
+// #include "Debug.hpp"
+// Debug d;
+#include "Globals.cpp"
 #include "Gui.hpp"
 
 int main(){

@@ -33,7 +33,7 @@ void Gui::setSDL_GLAttributes(){
 
 void Gui::initGLEW(){
     //-----------------------------------------GLEW----------------------------------------//
-    d.logger("Setting up GLEW...");
+    g::log("Setting up GLEW...");
 
     // GLEW -- enables specific features of certain graphics cards (not strictly necissary)
     
@@ -50,7 +50,7 @@ void Gui::initGLEW(){
 
     // std::cout << glGenBuffers << std::endl;
 
-    d.logger("Successfully set up GLEW.");
+    g::log("Successfully set up GLEW.");
 }
 
 void Gui::initLines(){
@@ -60,7 +60,7 @@ void Gui::initLines(){
 }
 
 void Gui::createLines(){
-    // d.logger("Creating Triangle...", 5);
+    // g::log("Creating Triangle...", 5);
     // float vertices[] = {
     //  0.0f,  0.5f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
     //  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Vertex 2: Green
@@ -103,7 +103,7 @@ void Gui::createLines(){
 }
 
 void Gui::initSDL(std::string title){
-    d.logger("Initializing SDL...");
+    g::log("Initializing SDL...");
 
     // initalize SDL
     if (SDL_Init(SDL_INIT_EVERYTHING))
@@ -123,7 +123,7 @@ void Gui::initSDL(std::string title){
         exit(1);
     }
     
-    d.logger("Creating OpenGL context...", 5);
+    g::log("Creating OpenGL context...", 5);
     // Create the OpenGL context (finally)
     context = SDL_GL_CreateContext(window);
     // SDL_GL_MakeCurrent(window, context);
@@ -131,14 +131,14 @@ void Gui::initSDL(std::string title){
 }
 
 void Gui::createVAO(){
-    d.logger("Creating VAO...", 5);
+    g::log("Creating VAO...", 5);
     // Create Vertex Array Object
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 }
 
 GLuint Gui::createVertexShader(){
-    d.logger("Creating vertex shader...", 5);
+    g::log("Creating vertex shader...", 5);
     // Create and compile the vertex shader
     const char* vertexSource = GLSL(
         in vec2 position;
@@ -151,7 +151,7 @@ GLuint Gui::createVertexShader(){
         }
     );
     
-    d.logger("compiling vertex shader...", 5);
+    g::log("compiling vertex shader...", 5);
     // compile it
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexSource, NULL);
@@ -169,7 +169,7 @@ GLuint Gui::createVertexShader(){
 }
 
 GLuint Gui::createFragmentShader(){
-    d.logger("Creating fragment shader...", 5);
+    g::log("Creating fragment shader...", 5);
     // Create and compile the fragment shader
     const char* fragmentSource = GLSL(
         uniform vec4 drawColor;
@@ -182,7 +182,7 @@ GLuint Gui::createFragmentShader(){
         }
     );
 
-    d.logger("Compiling fragment shader...", 5);
+    g::log("Compiling fragment shader...", 5);
     // compile it
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
@@ -201,7 +201,7 @@ GLuint Gui::createFragmentShader(){
 }
 
 void Gui::compileShaders(GLuint vertex, GLuint fragment){
-    d.logger("Linking shaders...", 5);
+    g::log("Linking shaders...", 5);
     // Link the vertex and fragment shader into a shader program
     shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertex);
@@ -226,7 +226,7 @@ void Gui::arrangeLines(){
 }
 
 void Gui::run(){
-    d.logger("Starting window proper...");
+    g::log("Starting window proper...");
 
     // the event loop
     SDL_Event event;
@@ -267,7 +267,7 @@ void Gui::run(){
 
                     // createLines();
 
-                    d.logger("Mouse pressed", 4);
+                    g::log("Mouse pressed", 4);
                     break;
                 }
                 case SDL_MOUSEBUTTONUP:
@@ -279,14 +279,14 @@ void Gui::run(){
 
                     createLines();
                     
-                    // d.printVector(indecies, -1, 0);
-                    d.logger("Mouse released", 4);
+                    // g::printVector(indecies, -1, 0);
+                    g::log("Mouse released", 4);
                     break;
                 case SDL_MOUSEMOTION:
                     if (trackMouse){
                         lineData.push_back(mouseLoc);
 
-                        d.logger("Mouse is moving, and I'm tracking it.", 5);
+                        g::log("Mouse is moving, and I'm tracking it.", 5);
                     }
                     break;
             }
@@ -303,7 +303,7 @@ void Gui::run(){
         for (auto i: arena.players.front().lines){
             glDrawArrays(GL_LINES_ADJACENCY, offset, i.getDataLen());
             offset += i.getDataLen();
-            // d.logger("Drawing lines", 5);
+            // g::log("Drawing lines", 5);
         }
         // glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -320,11 +320,11 @@ void Gui::run(){
         // glViewport(0, 0, width, height);
     }
 
-    d.logger("Exit signal recieved, closing window.");
+    g::log("Exit signal recieved, closing window.");
 }
 
 void Gui::cleanup(GLuint vertexShader, GLuint fragmentShader){
-    d.logger("Cleaning Up...");
+    g::log("Cleaning Up...");
 
     // delete everything and clean up
     glDeleteProgram(shaderProgram);

@@ -11,12 +11,12 @@ vector<float> Arena::getLineVertices(){
                 mainVertices.push_back(k);
     }
 
-    d.printVector(mainVertices, 5);
+    g::printVector(mainVertices, 5);
 
     // for(auto i: mainVertices)
-    //     d.logger(std::to_string(i), 5);
+    //     g::logger(std::to_string(i), 5);
 
-    d.logger("mainVertices is has " + std::to_string(mainVertices.size()) + " items", 5);
+    g::log("mainVertices is has " + std::to_string(mainVertices.size()) + " items", 5);
 
     // auto result = mainVertices.data();
     // float result[mainVertices.size()];

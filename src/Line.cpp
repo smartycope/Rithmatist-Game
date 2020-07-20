@@ -26,8 +26,8 @@ void Line::finish(Point end, const vector<Point>& data){
 vector<Point> Line::getData(){
     // vector<Point> tmp = lineData;
 
-    // de.printVector(lineData);
-    // de.printVector(tmp);
+    // g::printVector(lineData);
+    // g::printVector(tmp);
     
     // lineData.insert(lineData.begin(), start);
     // lineData.push_back(end);

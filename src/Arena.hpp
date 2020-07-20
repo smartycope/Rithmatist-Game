@@ -3,7 +3,7 @@
 // #include "Line.hpp"
 // #include "Color.hpp"
 #include "Player.hpp"
-// #include "Debug.hpp"
+#include "Globals.cpp"
 
 class Arena{
 private:
