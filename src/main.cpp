@@ -1,3 +1,5 @@
+#include "Debug.hpp"
+Debug d;
 #include "Gui.hpp"
 
 int main(){

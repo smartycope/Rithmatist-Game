@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.12)
 
 project(Rithmatist)
 
-set(CMAKE_CXX_STANDARD 17)
-# set(CMAKE_CXX_FLAGS "sdl-config --cflags --libs")
-set(CMAKE_CXX_FLAGS "-lpthread -lm")
+set(CMAKE_CXX_STANDARD 20)
+
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_CXX_COMPILER clang)
+#set(CMAKE_CXX_FLAGS "-lpthread -lm")
 
 # gcc -o test test.c sdl-config --cflags --libs
 

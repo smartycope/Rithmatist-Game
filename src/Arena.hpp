@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Line.hpp"
-#include "Color.hpp"
+// #include "Line.hpp"
+// #include "Color.hpp"
 #include "Player.hpp"
+// #include "Debug.hpp"
 
 class Arena{
 private:
-
 public:
     Color background;
     std::vector<Player> players;
@@ -17,5 +17,5 @@ public:
         players.push_back(defualtPlayer); 
     };
 
-    float* getLineVertices();
+    vector<float> getLineVertices();
 };

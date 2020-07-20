@@ -1,12 +1,14 @@
-#ifndef DEBUGGER
-#define DEBUGGER
+#pragma once
 
 #include <iostream>
 #include <any>
 #include <iomanip>
+#include "Point.hpp"
+
+using std::vector;
 
 /*
-0: No debug info
+0: No debug infob
 1: 
 2: 
 3: 
@@ -15,11 +17,10 @@
 */
 
 static unsigned int debugCount = 0;
+const static int verbose = 4;
 
 class Debug{
 public:
-    const static int verbose = 4;
-
     Debug() {};
 
     void logger(std::string message, unsigned int verbosity = verbose){
@@ -75,6 +76,3 @@ public:
         std::cout << "\n";
     }
 };
-
-
-#endif

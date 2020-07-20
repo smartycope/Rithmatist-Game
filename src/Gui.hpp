@@ -16,11 +16,11 @@
 #include <string>
 #include <cassert>
 
-#include "Point.hpp"
-#include "Line.hpp"
+// #include "Point.hpp"
+// #include "Line.hpp"
 #include "Arena.hpp"
-#include "Color.hpp"
-// #include "Debug.cpp"
+// #include "Color.hpp"
+// #include "Debug.hpp"
 
 class Gui{
 private:

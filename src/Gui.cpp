@@ -1,6 +1,6 @@
 #include "Gui.hpp"
-#include "Debug.hpp"
-Debug d;
+// #include "Debug.hpp"
+// Debug d;
 // #include "LineForbiddence.hpp"
 
 // this line is intelligent
@@ -79,9 +79,12 @@ void Gui::createLines(){
 
     // glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
+    auto l = arena.getLineVertices().data();
 
+    // float result[l.size()];
+    // std::copy(std::begin(l), std::end(l), result);
     
-    glBufferData(GL_ARRAY_BUFFER, sizeof(result), result, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(l), l, GL_STATIC_DRAW);
     
 
     // vbos.push_back(vbo);
@@ -276,7 +279,7 @@ void Gui::run(){
 
                     createLines();
                     
-                    d.printVector(indecies, -1, 0);
+                    // d.printVector(indecies, -1, 0);
                     d.logger("Mouse released", 4);
                     break;
                 case SDL_MOUSEMOTION:
@@ -299,7 +302,7 @@ void Gui::run(){
         int offset = 0;
         for (auto i: arena.players.front().lines){
             glDrawArrays(GL_LINES_ADJACENCY, offset, i.getDataLen());
-            offset += i;
+            offset += i.getDataLen();
             // d.logger("Drawing lines", 5);
         }
         // glDrawArrays(GL_TRIANGLES, 0, 3);

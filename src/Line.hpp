@@ -10,6 +10,9 @@
 #include "Point.hpp"
 #include "Color.hpp"
 
+// #include "Debug.hpp"
+// Debug d;
+
 using std::vector;
 using std::array;
 

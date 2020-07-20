@@ -6,7 +6,7 @@ vector<float> Player::getVertices(){
     int i = 0;
 
     for(auto l: lines){
-        vector<Point> = l.getData()
+        vector<Point> data = l.getData();
         for (i = 0; i < data.size(); ++i){
             auto pointArray = data[i].getVector();
             // std::cout << pointArray[0] << ", " << pointArray[1] << "\n";
