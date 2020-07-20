@@ -15,8 +15,7 @@ public:
 
     // : background(0.0f, 0.0f, 1.0f, 1.0f)
     Arena(): background(0.2f, 0.2f, 0.2f, 0.7f) {
-        Player defualtPlayer("User");
-        players.push_back(defualtPlayer); 
+        players.push_back(Player("User"));
     };
 
    std::vector<float> getLineVertices();

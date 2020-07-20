@@ -4,9 +4,8 @@
 #include <any>
 #include <iomanip>
 #include "Point.hpp"
-
-using std::vector;
-
+#include <vector>
+#include <string>
 #define RAD2DEG 56.54866776;
 #define verbose 4
 

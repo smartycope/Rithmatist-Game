@@ -1,3 +1,0 @@
-/home/skipper/hello/C++/Rithmatist Game/Examples/CMakeFiles/rebuild_cache.dir
-/home/skipper/hello/C++/Rithmatist Game/Examples/CMakeFiles/Rithmatist.dir
-/home/skipper/hello/C++/Rithmatist Game/Examples/CMakeFiles/edit_cache.dir
