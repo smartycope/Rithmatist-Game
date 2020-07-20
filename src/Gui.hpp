@@ -20,7 +20,7 @@
 // #include "Line.hpp"
 #include "Arena.hpp"
 // #include "Color.hpp"
-#include "Globals.cpp"
+#include "Globals.hpp"
 
 class Gui{
 private:

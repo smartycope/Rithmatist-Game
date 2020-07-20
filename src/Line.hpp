@@ -10,7 +10,7 @@
 #include "Point.hpp"
 #include "Color.hpp"
 
-#include "Globals.cpp"
+#include "Globals.hpp"
 
 using std::vector;
 using std::array;

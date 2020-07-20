@@ -2,11 +2,20 @@ cmake_minimum_required(VERSION 3.12)
 
 project(Rithmatist)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_COMPILER clang)
 #set(CMAKE_CXX_FLAGS "-lpthread -lm")
+set(CMAKE_CXX_FLAGS "-pthread")
+
+# To make everything fully multithreaded compliant
+set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+set(CMAKE_HAVE_THREADS_LIBRARY 1)
+set(CMAKE_USE_WIN32_THREADS_INIT 0)
+set(CMAKE_USE_PTHREADS_INIT 1)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 # gcc -o test test.c sdl-config --cflags --libs
 
@@ -39,5 +48,8 @@ include_directories(
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 #link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} dl)
 #target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
+
+
+# std::basic_ostream<char, std::char_traits<char> >& std::operator<< <std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char)@GLIBCXX_3.4 (2)

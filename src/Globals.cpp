@@ -1,31 +1,15 @@
-#pragma once
-
-#include <iostream>
-#include <any>
-#include <iomanip>
-#include "Point.hpp"
-
-using std::vector;
+#include "Globals.hpp"
 
 namespace g{
 
 unsigned long debugCount = 0;
-const int verbose = 4;
-/*
-0: No debug infob
-1: 
-2: 
-3: 
-4: 
-5: All debug info
-*/
 
-void log(std::string message, unsigned int verbosity = verbose){
+void log(std::string message, unsigned int verbosity){
     if(verbosity <= verbose)
         std::cout << ++debugCount << ": " << message << std::endl;
 }
 
-void printVector(const vector<float>& v, int itemsPerLine = -1, int spacing = 10){
+void printVector(const vector<float>& v, int itemsPerLine, int spacing){
     std::cout << "\n";
     int count = 1;
     for (auto i: v){
@@ -41,7 +25,7 @@ void printVector(const vector<float>& v, int itemsPerLine = -1, int spacing = 10
     std::cout << "\n";
 }
 
-void printVector(const vector<int>& v, int itemsPerLine = -1, int spacing = 10){
+void printVector(const vector<int>& v, int itemsPerLine, int spacing){
     std::cout << "\n";
     int count = 1;
     for (auto i: v){
@@ -57,7 +41,7 @@ void printVector(const vector<int>& v, int itemsPerLine = -1, int spacing = 10){
     std::cout << "\n";
 }
 
-void printVector(const vector<Point>& v, int itemsPerLine = -1, int spacing = 10){
+void printVector(const vector<Point>& v, int itemsPerLine, int spacing){
     std::cout << "\n";
     int count = 1;
     for (auto i: v){
