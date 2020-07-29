@@ -10,9 +10,18 @@ private:
 public:
     float r, g, b, a;
     Color() {};
-    Color(float r, float g, float b, float a = 1.0f): r(r), g(g), b(b), a(a) {};
-    Color(int   r, int   g, int   b, int   a = 255):
-    r(round(float(r) / 255.0f, 1)), g(round(float(g) / 255.0f, 1)), b(round(float(b) / 255.0f, 1)), a(round(float(a) / 255.0f, 1)) {};
+    Color(float r, float g, float b, float a = 1.0f): 
+        r(r), 
+        g(g), 
+        b(b), 
+        a(a) 
+        {};
+    Color(int r, int g, int b, int a = 255):
+        r(round(float(r) / 255.0f, 1)), 
+        g(round(float(g) / 255.0f, 1)), 
+        b(round(float(b) / 255.0f, 1)), 
+        a(round(float(a) / 255.0f, 1)) 
+        {};
 };
 
 /*

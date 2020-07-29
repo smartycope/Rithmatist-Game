@@ -36,3 +36,6 @@ Examples/CMakeCache.txt
 Examples/CMakeFiles/
 Examples/cmake_install.cmake
 Examples/Makefile
+bin/
+THANKS.md
+.vscode

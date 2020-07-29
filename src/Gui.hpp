@@ -16,13 +16,16 @@
 #include <string>
 #include <cassert>
 
-// #include "Point.hpp"
-// #include "Line.hpp"
+#include "Point.hpp"
+#include "Line.hpp"
 #include "Arena.hpp"
-// #include "Color.hpp"
+#include "Color.hpp"
 #include "Globals.hpp"
 
 // using std::vector;
+namespace g{
+extern unsigned int windowWidth, windowHeight;
+}
 
 class Gui{
 private:
@@ -41,6 +44,7 @@ private:
     void setSDL_GLAttributes();
     void initLines();
     void createLines();
+    void updateLines();
     void initGLEW();
     void initSDL(std::string title);
     void createVAO();
@@ -55,10 +59,22 @@ public:
     unsigned int width, height;
     Point mouseLoc;
 
-    Gui() {}; // just for getting the window width and height
-    Gui(std::string title, unsigned int width, unsigned int height):                     width(width), height(height), windowPosition(Point(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED)) { init(title); };
-    Gui(std::string title, unsigned int width, unsigned int height, Point position):     width(width), height(height), windowPosition(position)                                              { init(title); };
-    Gui(std::string title, unsigned int width, unsigned int height, int xPos, int yPos): width(width), height(height), windowPosition(Point(xPos, yPos))                                     { init(title); };
+    // Gui() {}; // just for getting the window width and height 
+    Gui(std::string title, unsigned int width, unsigned int height):                     
+        width(width), 
+        height(height),
+        windowPosition(Point(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED))
+        { init(title); };
+    Gui(std::string title, unsigned int width, unsigned int height, Point position):     
+        width(width), 
+        height(height), 
+        windowPosition(position)                                              
+        { init(title); };
+    Gui(std::string title, unsigned int width, unsigned int height, int xPos, int yPos): 
+        width(width), 
+        height(height), 
+        windowPosition(Point(xPos, yPos))                                     
+        { init(title); };
 
     void printMouseLoc();
 };

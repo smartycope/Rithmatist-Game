@@ -9,13 +9,12 @@ float Point::round(float var, int digits) {
     return float(value / (digits * 10));
 }
 
-std::array<float, 2> Point::getVector(){
+std::pair<float, float> Point::getVector(){
     // Point tmp(x, y);
     // tmp.convCenter();
     Point tmp = this->convCenter();
-
-    std::array<float, 2> tmpArray = {float(tmp.x) / (float(width) / 2.0f), (float(tmp.y) / (float(height) / 2.0f)) * -1};
-    return tmpArray;
+    std::pair<float, float> tmp2(float(tmp.x) / (float(g::windowWidth) / 2.0f), (float(tmp.y) / (float(g::windowHeight) / 2.0f)) * -1);
+    return tmp2;
 }
 
 void Point::print(){
@@ -23,11 +22,11 @@ void Point::print(){
 }
 
 Point Point::convCenter(){
-    Point tmp(float(x) - float(width) / 2.0f, float(y) - float(height) / 2.0f);
+    Point tmp(float(this->x) - float(g::windowWidth) / 2.0f, float(this->y) - float(g::windowHeight) / 2.0f);
     return tmp;
 }
 
 Point Point::convTopLeft(){
-    Point tmp(float(x) + float(width) / 2.0f, float(y) + float(height) / 2.0f);
+    Point tmp(float(x) + float(g::windowWidth) / 2.0f, float(y) + float(g::windowHeight) / 2.0f);
     return tmp;
 }

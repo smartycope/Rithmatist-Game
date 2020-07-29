@@ -17,27 +17,43 @@
 
 class Line{
 private:
-    int accuracy;                // how close is the given line to what it's supposed to be?
+    int accuracy;                 // how close is the given line to what it's supposed to be?
     bool unidentified;
 
 public:
     Point start;
     Point end;
-   std::vector<Point> lineData;     // all the stuff in the middle
+    std::vector<Point> lineData;  // all the stuff in the middle
+    std::vector<float> vertices;
     bool isFinished;
-    // Color lineColor;
+    Color lineColor;
 
-    Line(Point start = Point()): start(start), isFinished(false) {};
-    Line(Point start, Point end): start(start), end(end), isFinished(true) {};
-    Line(Point start, Point end, const std::vector<Point>& data): start(start), end(end), lineData(data), isFinished(true) {};
-    // Line(vector<Point>* dataP): lineDataP(dataP) {};
+    Line(Point start = Point()): 
+        start(start), 
+        lineColor(Color()),
+        accuracy(0),
+        isFinished(false) {};
+    Line(Point start, Point end): 
+        start(start), 
+        end(end), 
+        lineColor(Color()),
+        accuracy(0),
+        isFinished(true) {};
+    Line(Point start, Point end, const std::vector<Point>& data): 
+        start(start), 
+        end(end), 
+        lineColor(Color()),
+        lineData(data), 
+        accuracy(0),
+        isFinished(true) 
+        {};
 
     void draw();
-    Line identifyLine(Line line);
+    Line identifyLine(Line* line);
     void finish(Point end);
     void finish(Point end, const std::vector<Point>& data);
     int  getDataLen();
-    //std::vector<float> vertex(vector<Point>& data);
-   std::vector<Point> getData();
-    //std::vector<float
+    std::vector<Point> getData();
+    void erase();
+    std::vector<float> update(Color playersColor = Color());
 };

@@ -5,6 +5,12 @@
 #include <array>
 #include <algorithm>
 
+#include "Globals.hpp"
+
+namespace g{
+extern unsigned int windowWidth, windowHeight;
+}
+
 // using std::vector;
 // using std::array;
 
@@ -12,9 +18,8 @@
 
 class Point{
 private:
-    // Gui gui;
-    int width  = 485;
-    int height = 300;
+    // int width  = 485;
+    // int height = 300;
 
     float round(float var, int digits = 1);
 
@@ -25,7 +30,7 @@ public:
     Point(int x, int y): x(x), y(y) {};
 
     void print();
-    std::array<float, 2> getVector();
+    std::pair<float, float> getVector();
     Point convCenter();
     Point convTopLeft();
 };

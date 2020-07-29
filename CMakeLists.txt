@@ -2,12 +2,24 @@ cmake_minimum_required(VERSION 3.12)
 
 project(Rithmatist)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_COMPILER clang++)
-set(CMAKE_CXX_COMPILER clang)
+#set(CMAKE_CXX_COMPILER clang++)
+#set(CMAKE_CXX_COMPILER clang)
 #set(CMAKE_CXX_FLAGS "-lpthread -lm")
 set(CMAKE_CXX_FLAGS "-pthread")
+
+set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
+
+# put the binaries where I want them
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+#set(CMAKE_DEBUG_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/debug)
+
+# stuff for debugging
+#set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
+#set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
 # To make everything fully multithreaded compliant
 set(CMAKE_THREAD_LIBS_INIT "-lpthread")
@@ -45,10 +57,12 @@ include_directories(
     ${OPENGL_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME} ${SRC_LIST})
+set(BINARY_NAME "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}")
+
+add_executable(${BINARY_NAME} ${SRC_LIST})
 
 #link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} dl)
+target_link_libraries(${BINARY_NAME} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} dl)
 #target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
 

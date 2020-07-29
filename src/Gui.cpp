@@ -1,4 +1,6 @@
 #include "Gui.hpp"
+#include "Globals.hpp"
+#include <SDL2/SDL_render.h>
 // #include "Debug.hpp"
 // Debug d;
 // #include "LineForbiddence.hpp"
@@ -79,29 +81,40 @@ void Gui::createLines(){
 
     // glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    auto l = arena.getLineVertices().data();
+    // auto l = arena.getLineVertices().data();
 
-    //std::vector<float> l = arena.getLineVertices();
-    // float result[l.size()];
-    // std::copy(std::begin(l), std::end(l), result);
+    // std::vector<float> l = arena.getLineVertices();
+    // arena.currentLineVertices
+
+    // l.insert(l.end(), currentLine.begin(), currentLine.end());
+    float result[arena.vertices.size()];
+    // std::copy(l.begin(), l.end(), result);
+    std::copy(arena.vertices.begin(), arena.vertices.end(), result);
+    // g::printVector(arena.vertices, 6);
+    logVal(arena.vertices.size());
+    // g::printVector(arena.vertices, 6);
     
-    glBufferData(GL_ARRAY_BUFFER, sizeof(l), l, GL_STATIC_DRAW);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(result), result, GL_STATIC_DRAW);
-    
+    glBufferData(GL_ARRAY_BUFFER, sizeof(result), result, GL_STATIC_DRAW);
+        // glBufferData(GL_ARRAY_BUFFER, arena.currentVertices.size() * sizeof(float), arena.currentVertices.data(), GL_STATIC_DRAW);
+        
 
-    // vbos.push_back(vbo);
+        // vbos.push_back(vbo);
 
-    // int grandTotalIndecies = 0;
-    // for (int i: totalIndecies)
-    //     grandTotalIndecies += i;
+        // int grandTotalIndecies = 0;
+        // for (int i: totalIndecies)
+        //     grandTotalIndecies += i;
 
-    // GLuint elements[grandTotalIndecies];
+        // GLuint elements[grandTotalIndecies];
 
 
-    // GLuint ebo;
-    // glGenBuffers(1, &ebo);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+        // GLuint ebo;
+        // glGenBuffers(1, &ebo);
+        // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+}
+
+void Gui::updateLines(){
+    arena.update();
 }
 
 void Gui::initSDL(std::string title){
@@ -267,56 +280,44 @@ void Gui::run(){
                     Line newLine(mouseLoc);
                     arena.players.front().lines.push_back(newLine);
 
-                    // createLines();
-
                     g::log("Mouse pressed", 4);
                     break;
                 }
                 case SDL_MOUSEBUTTONUP:
                     trackMouse = false;
 
-                    assert(not arena.players.front().lines.back().isFinished);
-                    // assert(not lineData.empty()); // This is just a dot.
-                    arena.players.front().lines.back().finish(mouseLoc, lineData);
+                    arena.players.front().lines.back().finish(mouseLoc);
 
-                    createLines();
-                    
-                    // g::printVector(indecies, -1, 0);
                     g::log("Mouse released", 4);
                     break;
                 case SDL_MOUSEMOTION:
                     if (trackMouse){
-                        lineData.push_back(mouseLoc);
+                        arena.players.front().lines.back().lineData.push_back(mouseLoc);
+
+                        updateLines();
+                        createLines();
 
                         g::log("Mouse is moving, and I'm tracking it.", 5);
                     }
                     break;
-            }
+            }        
         }
         
-        // now draw everything in the vector of things we need to draw
-        // for(auto players: arena.players)
-        //     for(auto line: players.lines)
-        //         line.draw();
-
-        //                 type, start, count
-        
+        // now draw everything in the vector of things we need to draw        
         int offset = 0;
         for (auto i: arena.players.front().lines){
-            glDrawArrays(GL_LINES_ADJACENCY, offset, i.getDataLen());
+            //              type,       start,      count
+            glDrawArrays(GL_LINE_STRIP, offset, i.getDataLen());
             offset += i.getDataLen();
-            // g::log("Drawing lines", 5);
         }
-        // glDrawArrays(GL_TRIANGLES, 0, 3);
 
         if (!trackMouse)
             lineData.clear();
 
         // lastly, swap the buffers so everything you just did is now being shown.
         SDL_GL_SwapWindow(window);
-        // clear the screen
+        // clear the screen and show the background color
         glClearColor(arena.background.r, arena.background.g, arena.background.b, arena.background.a);
-        // glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         // "Show what you need to shooow, show what you need to shoow..."
         // glViewport(0, 0, width, height);
@@ -343,7 +344,10 @@ void Gui::cleanup(GLuint vertexShader, GLuint fragmentShader){
 }
 
 void Gui::init(std::string title){
-    drawColor = arena.players.front().lineColor;
+    g::windowWidth = width; 
+    g::windowHeight = height;
+
+    drawColor = arena.players.front().drawColor;
 
     initSDL(title);
     initGLEW();
