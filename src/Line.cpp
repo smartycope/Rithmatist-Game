@@ -1,4 +1,7 @@
 #include "Line.hpp"
+#include "Globals.hpp"
+
+#include <ctime>
 
 
 void Line::draw(){
@@ -11,28 +14,39 @@ Line Line::identifyLine(Line* line){
 }
 
 int Line::getDataLen(){
-    // g::printVector(lineData, 6);
-    // assert(lineData.size() % 6 == 0);
-    // return lineData.size() / 6;
-    return lineData.size();
-    // return lineData.size() * 6;
+    int len = lineData->size();
+
+    // check if start/end are empty, if so, add them
+    if((start.x != -1) or (start.y != -1) or isFinished){
+        ++len;
+        if((end.x != -1) or (end.y != -1) or isFinished)
+            ++len;
+    }
+    return len;
 }
 
 void Line::finish(Point end){
     this->end = end;
+    isFinished = true;
 }
 
 void Line::finish(Point end, const std::vector<Point>& data){
     this->end = end;
-    lineData = data;
+    lineData = new std::vector<Point>(data);
+    isFinished = true;
 }
 
-std::vector<Point> Line::getData(){
-    //std::vector<Point> tmp = lineData;
-    
-    // tmp.insert(lineData.begin(), start)lineData;
-    // lineData.push_back(end);
-    return lineData;
+std::vector<Point>* Line::getData(){
+    std::vector<Point>* tmp = new std::vector<Point>;
+    tmp = lineData;
+
+    // check if start/end are empty, if so, add them
+    if((start.x != -1) or (start.y != -1) or isFinished){
+        tmp->insert(tmp->begin(), start);
+        if((end.x != -1) or (end.y != -1) or isFinished)
+            tmp->push_back(end);
+    }
+    return tmp;
 }
 
 void Line::erase(){
@@ -41,31 +55,62 @@ void Line::erase(){
     accuracy = 0;
     unidentified = false;
     isFinished = false;
-    lineData.clear();
-    vertices.clear();
+    lineData->clear();
+    vertices->clear();
 }
 
-std::vector<float> Line::update(Color playersColor){
+std::vector<float>* Line::update(Color playersColor){
     this->lineColor = playersColor;
-    // if (/* !isFinished and  */(vertices.size() != (lineData.size() * 6))){ // if we've added some lines since we've last checked
-        // assert(dataLen < lineData.size());
 
-        for(int i = vertices.size() / 6; i < lineData.size(); ++i){
-            std::pair<float, float> coord = lineData[i].getVector();
-            // I shouldn't have to do this (pun intended), but for some reason it won't work without it.
-            this->vertices.push_back(coord.first);
-            this->vertices.push_back(coord.second);
-            this->vertices.push_back(lineColor.r);
-            this->vertices.push_back(lineColor.g);
-            this->vertices.push_back(lineColor.b);
-            this->vertices.push_back(lineColor.a);
+    // if this is the current line, and there's points added that aren't in vertices...
+    // logVal(isFinished);
+    // _print(----------------------------------------------------------------------------1-) _endl
+    // logVal(this->vertices->size() / 6);
+    // _print((from Line)) _endl
+    // logVal(this->lineData->size());
+    // _print((from Line)) _endl
+    
+    if(!(isFinished) and (vertices->size() != (lineData->size() * 6))){
+        // logVal()
+        // for(int i = (vertices->size() / 6) - 1; i > lineData->size(); ++i)
+            // addVertices((*lineData)[i].getVector());
+            
+        for(auto it = lineData->begin() + (vertices->size() / 6); it != lineData->end(); ++it){
+            addVertices(it->getVector());
         }
-    // }
-
-    return this->vertices; // because nothing makes sense anymore.
+    }
+    else if (isFinished){
+        addVertices(start.getVector());
+        // for(int i = (vertices->size() / 6) - 1; i > lineData->size(); ++i)
+            // addVertices((*lineData)[i].getVector());
+        if (lineData->size()){
+            for(auto it = lineData->begin() + (vertices->size() / 6); it != lineData->end(); ++it){
+                addVertices(it->getVector());
+            }
+        }
+        addVertices(end.getVector());
+    }
+    // logVal(vertices->size());
+    return vertices; // because nothing makes sense anymore.
 }
 
+void Line::addVertices(std::pair<float, float> coord){
+    //// I shouldn't have to do this (pun intended), but for some reason it won't work without it.
+    vertices->push_back(coord.first);
+    vertices->push_back(coord.second);
+    vertices->push_back(lineColor.r);
+    vertices->push_back(lineColor.g);
+    vertices->push_back(lineColor.b);
+    vertices->push_back(lineColor.a);
+}
 
+void Line::init() {}
+
+Line::~Line(){
+    // delete lineData;
+    // delete vertices;
+    // erase();
+}
 
 /* 
 std::vector<float> Player::update(){

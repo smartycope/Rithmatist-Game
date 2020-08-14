@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include "Globals.hpp"
 #include <string>
 
 // calculate vertices every time, instead of storing them (less efficent)
@@ -14,7 +15,7 @@
             appendVector(data, currentLine);
                 for (i = 0; i < data.size(); ++i){
                     auto pointArray = data[i].getVector();
-                    // std::cout << pointArray[0] << ", " << pointArray[1] << "\n";
+                    // std::cout << pointArray[0] << ", " << pointArray[1] << "n";
                     returnArray.push_back(pointArray[0]);
                     returnArray.push_back(pointArray[1]);
                     returnArray.push_back(lineColor.r);
@@ -28,30 +29,62 @@
 */
 
 
-std::vector<float> Player::update(){
-    // for (auto i: lines){
-        // i.lineColor = drawColor;
-        // i.update();
-    // }
-        
-    std::vector<float> updated;
-    if (vertices.size() != lines.size() * 6){
+std::vector<float>* Player::update(){
+    std::vector<float>* updated =  new std::vector<float>;
 
+    // If the last line is still being drawn
+    if (not lines->back().isFinished){
+        std::vector<float>* tmp = lines->back().update(drawColor);
+        switch(tmp->size()){
+            case 0:
+                break;
+            case 1:
+                vertices->push_back((*tmp)[0]); break;
+            default:
+                vertices->insert(vertices->end(), tmp->begin(), tmp->end()); break;
+        }
+        switch(tmp->size()){
+            case 0:
+                break;
+            case 1:
+                updated->push_back((*tmp)[0]); break;
+            default:
+                updated->insert(updated->end(), tmp->begin(), tmp->end()); break;
+        }
+    }
 
-        // for (auto it = lines.begin() + ((lines.size() - (vertices.size() / 6)) - 1); it != lines.end(); ++it){
-        //     appendVector(vertices, it->vertices);
-        //     appendVector(updated,  it->vertices);
-        // }
-
-        for(int i = vertices.size() / 6; i < lines.size(); ++i){
-            // std::vector<float> tmp = lines[i].vertices;
-            std::vector<float> tmp = lines[i].update(drawColor);
-            appendVector(vertices, tmp);
-            appendVector(updated,  tmp);
+    // Assumes that you haven't added any lines to the current stack in drawing the current line 
+    if ((vertices->size() != (lines->size() * 6)) and lines->back().isFinished){
+        for(auto it = lines->begin() + (vertices->size() / 6); it != lines->end(); ++it){
+        // for(int i = vertices->size() / 6; i < lines->size(); ++i){
+            // std::vector<float>* tmp = (*lines)[i].update(drawColor);
+            std::vector<float>* tmp = it->update(drawColor);
+            // appendHeapVector(vertices, tmp);
+            // appendHeapVector(updated,  tmp);
+            // appendVector(*vertices, *tmp);
+            // appendVector(*updated,  *tmp);
+            switch(tmp->size()){
+                case 0:
+                    break;
+                case 1:
+                    vertices->push_back((*tmp)[0]); break;
+                default:
+                    vertices->insert(vertices->end(), tmp->begin(), tmp->end()); break;
+            }
+            switch(tmp->size()){
+                case 0:
+                    break;
+                case 1:
+                    updated->push_back((*tmp)[0]); break;
+                default:
+                    updated->insert(updated->end(), tmp->begin(), tmp->end()); break;
+            }
         }
     }
     return updated;
 }
 
 
-void Player::init() { }
+void Player::init() {}
+
+Player::~Player() {}

@@ -4,8 +4,8 @@ project(Rithmatist)
 
 set(CMAKE_CXX_STANDARD 20)
 
-#set(CMAKE_CXX_COMPILER clang++)
-#set(CMAKE_CXX_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_C_COMPILER clang)
 #set(CMAKE_CXX_FLAGS "-lpthread -lm")
 set(CMAKE_CXX_FLAGS "-pthread")
 

@@ -1,4 +1,6 @@
 #include "Arena.hpp"
+#include "Globals.hpp"
+#include <string>
 // #include "Debug.hpp"
 
 /* 
@@ -37,9 +39,22 @@
 
 
 void Arena::update(){
-    for (auto p: players){
-        std::vector<float> toAdd = p.update();
-        if (not toAdd.empty())
-            appendVector(vertices, toAdd)
+    // logVal(players->size())
+    for (auto p: *players){
+        std::vector<float>* toAdd = p.second.update();
+        if (not toAdd->empty()){
+            appendHeapVector(vertices, toAdd);
+        }
+    }
+    // #define __CLASS__ file = __FILE__; file
+}
+
+/* 
+std::vector<float>* Arena::getVertices(){
+    std::vector<float>* sum = new std::vector<float>;
+    for (auto p: *players){
+
     }
 }
+ */
+Arena::~Arena() {}

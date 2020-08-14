@@ -1,8 +1,5 @@
 #pragma once
 
-#include <string>
-
-#include "Color.hpp"
 #include "Line.hpp"
 #include "Globals.hpp"
 
@@ -15,23 +12,28 @@ private:
 public:
     bool breached;
     Color drawColor;
-    std::vector<Line> lines;
-    std::vector<float> vertices;
+    std::vector<Line>* lines;
+    std::vector<float>* vertices;
     std::string name;
 
     Player(): 
         drawColor(Color(DRAW_COLOR)),
         breached(false), 
         name("___"), 
-        numLines(0) 
+        numLines(0),
+        vertices(new std::vector<float>),
+        lines(new std::vector<Line>)
         { init(); };
     Player(std::string name): 
         drawColor(Color(DRAW_COLOR)), 
         breached(false), 
         name(name), 
-        numLines(0) 
+        numLines(0),
+        vertices(new std::vector<float>),
+        lines(new std::vector<Line>)
         { init(); };
+    ~Player();
 
-    std::vector<float> update();
+    std::vector<float>* update();
     void init();
 };

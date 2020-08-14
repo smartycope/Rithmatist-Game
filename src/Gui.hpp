@@ -5,27 +5,21 @@
 // #include <GLFW/glfw3.h>
 #include <GL/gl.h>
 
-#include <SDL2/SDL_opengl.h>
+//* #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL.h>
 #include <SDL.h>
 // #include <GLFW/glfw3.h>
 #define GLEW_STATIC
 // #include <GL/glew.h>
 
-#include <iostream>
-#include <string>
-#include <cassert>
-
-#include "Point.hpp"
-#include "Line.hpp"
 #include "Arena.hpp"
-#include "Color.hpp"
 #include "Globals.hpp"
 
+#define MAX_FPS 60
+#define USE_VSYNC 0
+
 // using std::vector;
-namespace g{
-extern unsigned int windowWidth, windowHeight;
-}
+namespace g{ extern unsigned int windowWidth, windowHeight; }
 
 class Gui{
 private:
@@ -75,6 +69,7 @@ public:
         height(height), 
         windowPosition(Point(xPos, yPos))                                     
         { init(title); };
+    ~Gui();
 
     void printMouseLoc();
 };
