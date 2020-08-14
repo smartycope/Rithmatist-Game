@@ -30,6 +30,7 @@
 
 
 std::vector<float>* Player::update(){
+    // _print(I got to the beginning of player::update)
     std::vector<float>* updated =  new std::vector<float>;
 
     // If the last line is still being drawn
@@ -51,11 +52,12 @@ std::vector<float>* Player::update(){
             default:
                 updated->insert(updated->end(), tmp->begin(), tmp->end()); break;
         }
+        delete tmp;
     }
 
-    // Assumes that you haven't added any lines to the current stack in drawing the current line 
+    // Assumes that you haven't added any lines to the current stack in drawing the current line
     if ((vertices->size() != (lines->size() * 6)) and lines->back().isFinished){
-        for(auto it = lines->begin() + (vertices->size() / 6); it != lines->end(); ++it){
+        for(auto it = lines->begin() + (vertices->size() / 6); it < lines->end(); ++it){
         // for(int i = vertices->size() / 6; i < lines->size(); ++i){
             // std::vector<float>* tmp = (*lines)[i].update(drawColor);
             std::vector<float>* tmp = it->update(drawColor);
@@ -79,8 +81,10 @@ std::vector<float>* Player::update(){
                 default:
                     updated->insert(updated->end(), tmp->begin(), tmp->end()); break;
             }
+            delete tmp;
         }
     }
+    // _print(I got to the end of player::update)
     return updated;
 }
 

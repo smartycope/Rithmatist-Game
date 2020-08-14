@@ -1,6 +1,7 @@
 #include "Line.hpp"
 #include "Globals.hpp"
 
+#include <cstdio>
 #include <ctime>
 
 
@@ -17,11 +18,12 @@ int Line::getDataLen(){
     int len = lineData->size();
 
     // check if start/end are empty, if so, add them
-    if((start.x != -1) or (start.y != -1) or isFinished){
-        ++len;
-        if((end.x != -1) or (end.y != -1) or isFinished)
-            ++len;
-    }
+    // if((start.x != -1) or (start.y != -1) or isFinished){
+    //     ++len;
+    //     if((end.x != -1) or (end.y != -1) or isFinished)
+    //         ++len;
+    // }
+
     return len;
 }
 
@@ -55,6 +57,7 @@ void Line::erase(){
     accuracy = 0;
     unidentified = false;
     isFinished = false;
+    hasUpdated = false;
     lineData->clear();
     vertices->clear();
 }
@@ -62,40 +65,44 @@ void Line::erase(){
 std::vector<float>* Line::update(Color playersColor){
     this->lineColor = playersColor;
 
-    // if this is the current line, and there's points added that aren't in vertices...
-    // logVal(isFinished);
-    // _print(----------------------------------------------------------------------------1-) _endl
-    // logVal(this->vertices->size() / 6);
-    // _print((from Line)) _endl
-    // logVal(this->lineData->size());
-    // _print((from Line)) _endl
-    
-    if(!(isFinished) and (vertices->size() != (lineData->size() * 6))){
-        // logVal()
-        // for(int i = (vertices->size() / 6) - 1; i > lineData->size(); ++i)
-            // addVertices((*lineData)[i].getVector());
-            
+    int startSize = vertices->size();
+
+    // Add start once, and at the beginning
+    // if (not hasUpdated){
+    //     addVertices(start.getVector());
+    //     hasUpdated = true;
+    // }
+
+    if(!(isFinished) and (vertices->size() != ((lineData->size() + 1) * 6))){ // The +1 is for the start point
+        // _log("---");
         for(auto it = lineData->begin() + (vertices->size() / 6); it != lineData->end(); ++it){
             addVertices(it->getVector());
         }
     }
     else if (isFinished){
-        addVertices(start.getVector());
-        // for(int i = (vertices->size() / 6) - 1; i > lineData->size(); ++i)
-            // addVertices((*lineData)[i].getVector());
+        // _log("~~~");
+        // addVertices(start.getVector());
+
         if (lineData->size()){
             for(auto it = lineData->begin() + (vertices->size() / 6); it != lineData->end(); ++it){
                 addVertices(it->getVector());
             }
         }
-        addVertices(end.getVector());
+        // addVertices(end.getVector());
     }
-    // logVal(vertices->size());
-    return vertices; // because nothing makes sense anymore.
+
+    // Create a new subvector of the stuff we just added
+    // Cream: Just scraping the good stuff off the top
+    std::vector<float>* cream = new std::vector<float>;
+
+    // This loop was WAY harder than it should have been.
+    for (int i = startSize; i < vertices->size(); ++i)
+        cream->push_back((*vertices)[i]);
+
+    return cream;
 }
 
 void Line::addVertices(std::pair<float, float> coord){
-    //// I shouldn't have to do this (pun intended), but for some reason it won't work without it.
     vertices->push_back(coord.first);
     vertices->push_back(coord.second);
     vertices->push_back(lineColor.r);

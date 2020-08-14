@@ -23,6 +23,8 @@
 
 #define addData(player, where) \
     (*arena.players)[player].lines->back().lineData->push_back(where);
+
+#define USER ((*arena.players)["user"])
     
 
 void Gui::printMouseLoc(){
@@ -261,20 +263,23 @@ void Gui::arrangeLines(){
 
 void Gui::run(){
     g::log("Starting window proper...");
+    // _log(std::to_string(SDL_SYSWMEVENT));
+    // _log(std::to_string(SDL_VIDEORESIZE));
+    // _log(std::to_string(SDL_VIDEOEXPOSE));
+    // _log(std::to_string(SDL_USEREVENT));
+    // _log(std::to_string(SDL_ACTIVEEVENT));
 
     // the event loop
     SDL_Event event;
     bool fullscreen = false, run = true, trackMouse = false;
     Uint32 windowFlags = 0; // fudge variable
-    std::vector<Point> lineData;
     unsigned int previousTime, currentTime, lastOutput = 0;
 
     while (run){
         SDL_GetMouseState(&mouseLoc.x, &mouseLoc.y);
         // updateLines();
         // createLines();
-//      normalize
-        if (SDL_PollEvent(&event)){
+        while (SDL_PollEvent(&event)){
             switch(event.type){
                 case SDL_QUIT:
                     run = false; break;
@@ -285,16 +290,20 @@ void Gui::run(){
 
                         case 'f':
                             fullscreen = !fullscreen;
-                            if (fullscreen){
+                            if (fullscreen)
                                 SDL_SetWindowFullscreen(window, windowFlags | SDL_WINDOW_FULLSCREEN_DESKTOP);
-                            }
-                            else{
+                            else
                                 SDL_SetWindowFullscreen(window, windowFlags);
-                            }
+                            break;
+                        case 'c':
+                            arena.vertices->clear();
+                            USER.lines->clear();
+                            USER.vertices->clear();
+                            trackMouse = false;
                             break;
                         // add key here
                     }
-
+                    break;
                 case SDL_MOUSEBUTTONDOWN:
                 {
                     g::log("Mouse pressed", 3);
@@ -309,11 +318,24 @@ void Gui::run(){
                     }
                     break;
                 }
+                // Mouse leaves the window or the window is resized
+                case 512:
+                    if (not trackMouse)
+                        break;
                 case SDL_MOUSEBUTTONUP:
                     g::log("Mouse released", 3);
-                    // lastOutput = SDL_GetTicks();
-            // tmp.insert(tmp.begin(), arena.vertices->begin() + offset, arena.vertices->begin() + offset + i.getDataLen());
-            // g::printVector(tmp, 6);
+
+                    finishLine("user", mouseLoc);
+
+                    // logVal(USER.lines->size())
+
+                    // assert(trackMouse);
+                    trackMouse = false;
+                    
+                    updateLines();
+                    createLines();
+
+                    break;
                 case SDL_MOUSEMOTION:
                     if (trackMouse){
                         
@@ -340,23 +362,35 @@ void Gui::run(){
                     */
                     }
                     break;
+                default:
+                    std::cout << "Unknown event type: " << event.type << std::endl;
+                    break;
             }
         }
         
-        // now draw everything in the vector of things we need to draw
+        // Draw everything in the vector of things we need to draw
+        std::vector<GLint>   offsets;
+        std::vector<GLsizei> lengths;
+        int count  = 0;
         int offset = 0;
-        for (auto i: *(*(arena.players)["user"].lines){
-            //               type       start      count
-            glDrawArrays(GL_LINE_STRIP, offset, i.getDataLen());
-            // std::vector<float> tmp; //  = (*arena.vertices);
-            // tmp.insert(tmp.begin(), arena.vertices->begin() + offset, arena.vertices->begin() + offset + i.getDataLen());
-            // g::printVector(tmp, 6);
 
+        // Think of this as arena.players["user"].lines
+        for (auto i: *((*arena.players)["user"].lines)){
+            assert(offsets.size() == lengths.size());
+
+            lengths.push_back(i.getDataLen());
+            offsets.push_back(offset);
             offset += i.getDataLen();
+            ++count;
         }
 
-       if (!trackMouse and lineData.size())
-           lineData.clear();
+        //                type           offset          count           num primitives
+        glMultiDrawArrays(GL_LINE_STRIP_ADJACENCY, offsets.data(), lengths.data(), count);
+
+        // glDrawArrays(GL_LINE_STRIP_ADJACENCY, 0, arena.vertices->size());
+
+        // Sets vsync
+        SDL_GL_SetSwapInterval(USE_VSYNC);
 
         // Limit the FPS
         previousTime = currentTime;
@@ -367,8 +401,6 @@ void Gui::run(){
         if (currentTime - previousTime < 1000 / MAX_FPS)
             SDL_Delay((1000 / MAX_FPS) - (currentTime - previousTime));
 
-        // Sets vsync
-        SDL_GL_SetSwapInterval(USE_VSYNC);
         // Swap the buffers so everything you just did is now being shown.
         SDL_GL_SwapWindow(window);
         // Clear the screen and show the background color
@@ -377,8 +409,6 @@ void Gui::run(){
         // "Show what you need to shooow, show what you need to shoow..."
         // glViewport(0, 0, width, height);
     }
-
-    g::log("Exit signal recieved, closing window.");
 }
 
 void Gui::cleanup(GLuint vertexShader, GLuint fragmentShader){

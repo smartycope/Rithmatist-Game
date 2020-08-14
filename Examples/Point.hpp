@@ -1,1 +1,1 @@
-/home/skipper/hello/C++/Rithmatist Game/src/Point.hpp
+/home/copeland/hello/C++/Rithmatist-Game/src/Point.hpp

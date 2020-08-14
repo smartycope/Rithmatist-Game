@@ -40,7 +40,9 @@ Examples/*.cpp
 Examples/*.hpp
 Examples/Rith*
 Examples/Test
+Examples/test
 Examples/open*
+Examples/Examples/Test
 bin/
 THANKS.md
 .vscode

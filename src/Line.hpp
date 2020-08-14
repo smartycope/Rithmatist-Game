@@ -14,6 +14,7 @@ private:
     int accuracy;                 // how close is the given line to what it's supposed to be?
     bool unidentified;
     Color lineColor;
+    bool hasUpdated;
 
     void addVertices(std::pair<float, float>);
 
@@ -31,6 +32,7 @@ public:
         lineColor(Color()),
         accuracy(0),
         isFinished(false),
+        hasUpdated(false),
         lineData(new std::vector<Point>),
         vertices(new std::vector<float>)
         {};
@@ -40,6 +42,7 @@ public:
         lineColor(Color()),
         accuracy(0),
         isFinished(true),
+        hasUpdated(false),
         lineData(new std::vector<Point>),
         vertices(new std::vector<float>)
         {};
@@ -51,7 +54,8 @@ public:
         lineData(data),
         vertices(new std::vector<float>),
         accuracy(0),
-        isFinished(true)
+        isFinished(true),
+        hasUpdated(false)
         {};
     ~Line();
 

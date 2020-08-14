@@ -1,1 +1,1 @@
-/home/skipper/hello/C++/Rithmatist Game/src/Color.cpp
+/home/copeland/hello/C++/Rithmatist-Game/src/Color.cpp
