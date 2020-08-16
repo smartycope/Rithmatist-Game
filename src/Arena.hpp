@@ -2,15 +2,16 @@
 
 #include "Player.hpp"
 #include "Globals.hpp"
+
+#include <GL/gl.h>
 #include <map>
 
 // using std::vector;
 
 class Arena{
-private:
+private:    
 public:
     Color background;
-    // std::vector<Player> players; // TODO: This needs to be a map, not a vector.
     std::map<std::string, Player>* players;
     std::vector<float>* vertices;
 
@@ -26,6 +27,8 @@ public:
         { (*players)[player.name] = player; };
     ~Arena();
 
-   void update();
-   std::vector<float>* getVertices();
+    void clear(std::string name = "");
+    void update();
+    std::vector<float>* getVertices();
+    std::vector<std::tuple<std::vector<GLint>, std::vector<GLsizei>, int>> getArrangement(); //! Depricated
 };

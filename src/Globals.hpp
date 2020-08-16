@@ -23,6 +23,10 @@
 #define TOO_MUCH 50 * 6
 #define FILE_NAME_LENGTH 45
 
+// #define __CLASS__                  \
+//     std::string file = __FILE__;   \
+//     file.substr(FILE_NAME_LENGTH);
+
 #define appendVector(main, append)                                        \
     switch(append.size()){                                                \
         case 0:                                                           \
@@ -43,7 +47,7 @@
             main->insert(main->end(), append->begin(), append->end()); break; \
     }
 
-#define logVal(var) std::cout << g::getDebugCount() << ": " << #var << " = " << var << std::endl;
+#define logVal(var) std::cout << g::getDebugCount() << ": " << #var << " = " << std::fixed << std::setprecision(1) << var << std::endl;
 
 #define _print(message) std::cout << g::getDebugCount() << ": " << #message << std::endl;
 #define _endl std::cout << std::endl;
@@ -90,3 +94,30 @@ float round(float var, int digits = 1);
 
 // void printVector(const std::vector<Point>& v, int itemsPerLine = -1, int spacing = 11);
 } // namespace g
+
+
+/*////////////////////////////////////////////////TODO://////////////////////////////////////////////////////
+* Finish making lines eraseable
+* Line::IdentifyLine() function
+* Hook up GUI for a menu (imgui, nuklear)
+** Add options to menu
+*** Chalk color
+* Add modes
+** Tutorial
+** Example duels
+** Show named defenses
+** Practice mode
+*** Duel against a stationary defense
+** Analyze mode
+*** Draw without your lines doing anything, but have it analyze them and print your accuracy
+** Helper mode
+*** Whenever you draw a circle, lines appear subdividing it for you so you don't have to intuit it 
+*** (maybe change how many lines with the scrollwheel?)
+* Add an AI to play against
+* Add a starting screen
+* Add networking
+* Make lines of vigor shoot out
+* Allow lines to get broken parts
+* Allow lines to get pushed back
+* Make it so when you draw, instead of regular lines, it looks like you're drawing chalk
+*/ 

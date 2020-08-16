@@ -10,14 +10,17 @@ class Point{
 private:
 public:
     int x, y;
+    bool isNull;
 
     Point():
-        x(-1), 
-        y(-1) 
+        x(0), 
+        y(0),
+        isNull(true) 
         {};
     Point(int x, int y): 
         x(x), 
-        y(y) 
+        y(y),
+        isNull(false)
         {};
 
     void print();

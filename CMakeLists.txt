@@ -39,11 +39,12 @@ set(SRC_LIST
     ${CMAKE_SOURCE_DIR}/src/Arena.cpp
     ${CMAKE_SOURCE_DIR}/src/Gui.cpp
     ${CMAKE_SOURCE_DIR}/src/Line.cpp
-    ${CMAKE_SOURCE_DIR}/src/LineForbiddence.cpp
-    ${CMAKE_SOURCE_DIR}/src/LineMaking.cpp
-    ${CMAKE_SOURCE_DIR}/src/LineVigor.cpp
-    ${CMAKE_SOURCE_DIR}/src/LineWarding.cpp
-    #${CMAKE_SOURCE_DIR}/src/Debug.hpp
+    # ${CMAKE_SOURCE_DIR}/src/LineForbiddence.cpp
+    # ${CMAKE_SOURCE_DIR}/src/LineMaking.cpp
+    # ${CMAKE_SOURCE_DIR}/src/LineVigor.cpp
+    # ${CMAKE_SOURCE_DIR}/src/LineWarding.cpp
+    # ${CMAKE_SOURCE_DIR}/src/Debug.hpp
+    ${CMAKE_SOURCE_DIR}/src/Geometry.cpp
     ${CMAKE_SOURCE_DIR}/src/Globals.cpp
     ${CMAKE_SOURCE_DIR}/src/Point.cpp
     ${CMAKE_SOURCE_DIR}/src/Color.cpp

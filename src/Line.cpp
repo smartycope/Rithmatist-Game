@@ -1,41 +1,54 @@
 #include "Line.hpp"
+#include "Geometry.hpp"
 #include "Globals.hpp"
 
 #include <cstdio>
 #include <ctime>
+#include <string>
+
 
 
 void Line::draw(){
     // glDrawArrays(GL_LINES, 0, lineData.size() * 2 + 4);
 }
 
-Line Line::identifyLine(Line* line){
-    Line tmp;
-    return tmp;
+Line::Type Line::identifyLine(){
+    Geometry geo(this);
+
+    return geo.identify();
 }
 
 int Line::getDataLen(){
     int len = lineData->size();
 
     // check if start/end are empty, if so, add them
-    // if((start.x != -1) or (start.y != -1) or isFinished){
+    // if(start.isNull or isFinished){
     //     ++len;
-    //     if((end.x != -1) or (end.y != -1) or isFinished)
+    //     if(end.isNull or isFinished)
     //         ++len;
     // }
 
     return len;
 }
 
-void Line::finish(Point end){
+void Line::finish(Point end, bool identify){
     this->end = end;
     isFinished = true;
+
+    if (not lineData->size()){
+        lineData->push_back(start);
+        lineType = LINE_DOT;
+    }
+    else if (identify){
+        identifyLine();
+        printAcc();
+        // update();
+    }
 }
 
-void Line::finish(Point end, const std::vector<Point>& data){
-    this->end = end;
+void Line::finish(Point end, const std::vector<Point> data, bool identify){
+    finish(end, identify);
     lineData = new std::vector<Point>(data);
-    isFinished = true;
 }
 
 std::vector<Point>* Line::getData(){
@@ -43,9 +56,9 @@ std::vector<Point>* Line::getData(){
     tmp = lineData;
 
     // check if start/end are empty, if so, add them
-    if((start.x != -1) or (start.y != -1) or isFinished){
+    if(start.isNull or isFinished){
         tmp->insert(tmp->begin(), start);
-        if((end.x != -1) or (end.y != -1) or isFinished)
+        if(end.isNull or isFinished)
             tmp->push_back(end);
     }
     return tmp;
@@ -54,42 +67,75 @@ std::vector<Point>* Line::getData(){
 void Line::erase(){
     start = Point();
     end = Point();
-    accuracy = 0;
-    unidentified = false;
+    accuracy = -2;
+    // isIdentified = false;
     isFinished = false;
-    hasUpdated = false;
-    lineData->clear();
-    vertices->clear();
+    // lineData->clear();
+    // vertices->clear();
 }
 
-std::vector<float>* Line::update(Color playersColor){
+void Line::printAcc(){
+    std::string name;
+
+    switch(lineType){
+        case Line::LINE_DOT:         name = "dot";                 break;
+        case Line::LINE_UNKNOWN:     name = "unknown";             break;
+        case Line::LINE_MAKING:      name = "Line of Making";      break;
+        case Line::LINE_REVOCATION:  name = "Line of Revocation";  break;
+        case Line::LINE_VIGOR:       name = "Line of Vigor";       break;
+        case Line::LINE_WARDING:     name = "Line of Warding";     break;
+        case Line::LINE_FORBIDDENCE: name = "Line of Forbiddence"; break;
+    }
+
+    if (accuracy >= 50.f)
+        std::cout << g::getDebugCount() << ": " << "I'm  " << std::setprecision(1) << std::fixed << accuracy << "% sure that is a " << name << ".\n";
+    else if (lineType == LINE_UNKNOWN)
+        std::cout << g::getDebugCount() << ": " << "I have no idea what that is supposed to be.\n";
+    else 
+        std::cout << g::getDebugCount() << ": " << "That is not a " << name << ". (I'm " << std::setprecision(1) << std::fixed << 50.f - accuracy << "% sure)\n";
+        // std::cout << g::getDebugCount() << ": " << "That is not a " << name << ". (" << std::setprecision(1) << std::fixed << accuracy << "%)\n";
+}
+
+std::vector<float>* Line::update(Color playersColor, bool isDot){
     this->lineColor = playersColor;
+    if (isDot) lineType = LINE_DOT;
+    // if (isFinished){
+        // identifyLine();
+        // printAcc();
+    // }
 
     int startSize = vertices->size();
 
-    // Add start once, and at the beginning
-    // if (not hasUpdated){
-    //     addVertices(start.getVector());
-    //     hasUpdated = true;
+    // if (isFinished and not lineData->size()){
+    //     assert(start.x == end.x and start.y == end.y);
+    //     lineData->push_back(start);
     // }
 
-    if(!(isFinished) and (vertices->size() != ((lineData->size() + 1) * 6))){ // The +1 is for the start point
-        // _log("---");
+    if(!(isFinished) and (vertices->size() != (lineData->size() * 6))){
         for(auto it = lineData->begin() + (vertices->size() / 6); it != lineData->end(); ++it){
             addVertices(it->getVector());
         }
     }
     else if (isFinished){
-        // _log("~~~");
         // addVertices(start.getVector());
-
-        if (lineData->size()){
-            for(auto it = lineData->begin() + (vertices->size() / 6); it != lineData->end(); ++it){
+        if (lineData->size() > 1){
+            for(auto it = lineData->begin() + (vertices->size() / 6); it < lineData->end(); ++it){
                 addVertices(it->getVector());
             }
         }
+        // size == 1
+        else if(lineData->size()){
+            addVertices(start.getVector());
+            // addVertices(Point(start.x    , start.y + 1).getVector());
+            // addVertices(Point(start.x + 1, start.y + 1).getVector());
+            // addVertices(Point(start.x + 1, start.y    ).getVector());
+        }
         // addVertices(end.getVector());
     }
+
+    // logVal(lineData->size())
+    // logVal(vertices->size())
+    // logVal(isFinished)
 
     // Create a new subvector of the stuff we just added
     // Cream: Just scraping the good stuff off the top
@@ -111,13 +157,17 @@ void Line::addVertices(std::pair<float, float> coord){
     vertices->push_back(lineColor.a);
 }
 
+bool Line::isNull(){
+    return start.isNull and accuracy == -2;
+}
+
+void Line::append(Point where){
+    lineData->push_back(where);
+}
+
 void Line::init() {}
 
-Line::~Line(){
-    // delete lineData;
-    // delete vertices;
-    // erase();
-}
+Line::~Line() {}
 
 /* 
 std::vector<float> Player::update(){

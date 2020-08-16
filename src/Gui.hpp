@@ -3,11 +3,11 @@
 #include <GL/glew.h>
 
 // #include <GLFW/glfw3.h>
-#include <GL/gl.h>
+//* #include <GL/gl.h>
 
 //* #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL.h>
-#include <SDL.h>
+// #include <SDL.h>
 // #include <GLFW/glfw3.h>
 #define GLEW_STATIC
 // #include <GL/glew.h>
@@ -46,8 +46,11 @@ private:
     GLuint createFragmentShader();
     void compileShaders(GLuint vertex, GLuint fragment);
     void arrangeLines();
+    void addManualLines(Player player);
     void run();
+    void draw(bool points = false);
     void cleanup(GLuint vertexShader, GLuint fragmentShader);
+    void updateMouse(int x, int y);
     
 public:
     unsigned int width, height;
