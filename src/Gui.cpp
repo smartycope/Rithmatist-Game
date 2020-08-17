@@ -26,6 +26,7 @@
     (*arena.players)[player].lines->back().append(where);
 
 #define USER ((*arena.players)["user"])
+#define ROOT ((*arena.players)["root"])
     
 
 void Gui::printMouseLoc(){
@@ -253,32 +254,52 @@ void Gui::draw(bool points){
 }
 
 void Gui::addManualLines(Player player){
-    Geometry geo;
+    Geometry creator;
 
+    // Make the straight line
     Point center(243, 150);
     Point randEnd(125, 185);
-    auto data = geo.genOptLine(center, randEnd);
-    logVal(data.size())
-    Line optStraight(center, randEnd, data);
+    auto straightData = creator.genOptLine(center, randEnd);
+    Line optStraight(center, randEnd, straightData);
 
+    // Make the circle
+    int radius = 50;
+    auto circleData = creator.genOptCircle(center, radius, false);
+    Line optCircle(Point(center.x + radius, center.y), Point(center.x + radius, center.y), circleData);
+
+    // Analyze the straight line
+    optStraight.identifyLine();
+    optStraight.printAccDebug();
+
+    // Add the lines
     player.lines->push_back(optStraight);
+    player.lines->push_back(optCircle);
 
+    // Update the lines
     updateLines();
     createLines();
-    // delete lineData;
 }
 
 void Gui::run(){
     g::log("Starting window proper...");
 
+    // This won't be here for long
+    // Geometry creator;
+    // Point center(243, 150);
+    // auto circleData = creator.genOptCircle(center, 30);
+    // int animationIndex = 0;
+    // logVal(circleData.size())
+
     SDL_Event event;
-    bool fullscreen = false, run = true, trackMouse = false, identify = true;
+    bool fullscreen = false, run = true, trackMouse = false, drawPoints = false;
+    bool identify = true;
     bool shift = false, ctrl = false, alt = false;
     Uint32 windowFlags = 0; // fudge variable
     unsigned int previousTime, currentTime, lastOutput = 0;
-    (*arena.players)["root"] = Player("root");
+    unsigned int halfSecondDelay = 1;
+    (*arena.players)["root"] = Player("root", Color(255, 0, 0));
     
-    addManualLines((*arena.players)["root"]);
+    addManualLines(ROOT);
 
     while (run){
         // Update the mouse location - now done as needed
@@ -324,6 +345,10 @@ void Gui::run(){
                                 _log("Ctrl + z pressed");
                                 USER.lines->back().erase();
                             }
+                            break;
+                        case SDLK_TAB:
+                            drawPoints = !drawPoints; break;
+
                     }
                     break;
                 case SDL_KEYUP:
@@ -434,7 +459,27 @@ void Gui::run(){
             }
         }
 
-        draw(0);
+        //* For debugging
+        if (USER.lines->size() and USER.lines->back().isFinished){
+            Geometry creator(&(USER.lines->back()));
+            ROOT.lines->push_back(Line(USER.lines->back().start, USER.lines->back().end, creator.genOptLine(USER.lines->back().start, USER.lines->back().end)));
+        }
+
+        if(not (halfSecondDelay % 10)){
+            // if (animationIndex < circleData.size()){
+            //     // addData("root", circleData[animationIndex]);
+            //     addLine("root", circleData[animationIndex]);
+            //     finishLine("root", circleData[animationIndex], false);
+            //     _log("Adding " + std::to_string(circleData[animationIndex].x) + ", " + std::to_string(circleData[animationIndex].y) + " to be drawn");
+            //     ++animationIndex;
+            //     updateLines();
+            //     createLines();
+            // }
+        } ++halfSecondDelay;
+
+
+
+        draw(drawPoints);
 
         // Sets vsync
         SDL_GL_SetSwapInterval(USE_VSYNC);

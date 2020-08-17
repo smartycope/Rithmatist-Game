@@ -28,4 +28,7 @@ public:
     std::pair<float, float> getUnnormalizedVector();
     Point convCenter();
     Point convTopLeft();
+
+    // bool operator==(const Point& r);
+    bool operator!=(const Point& r);
 };

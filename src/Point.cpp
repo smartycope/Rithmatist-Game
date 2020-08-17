@@ -1,4 +1,5 @@
 #include "Point.hpp"
+#include <iterator>
 
 std::pair<float, float> Point::getVector(){
     Point tmp = this->convCenter();
@@ -23,4 +24,12 @@ Point Point::convTopLeft(){
 std::pair<float, float> Point::getUnnormalizedVector(){
     std::pair<float, float> tmp2(float(x), float(y) * -1);
     return tmp2;
+}
+
+// bool Point::operator==(const Point& r){
+//     return this->x == r.x and this->y == r.y;
+// }
+
+bool Point::operator!=(const Point& r){
+    return this->x != r.x or this->y != r.y;
 }

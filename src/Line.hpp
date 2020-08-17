@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#include <vector>
 
 // #include <GL/glew.h>
 // #include <SDL2/SDL_opengl.h>
@@ -23,6 +24,8 @@ private:
     Color lineColor;
 
     void addVertices(std::pair<float, float>);
+    void reUpdate();
+    std::vector<float> reUpdate(std::vector<Point> line, const Color& color);
 
 public:
     //todo figure out why these can't be protected like they should be
@@ -78,4 +81,5 @@ public:
     bool isNull();
     void append(Point where);
     void printAcc();
+    void printAccDebug();
 };

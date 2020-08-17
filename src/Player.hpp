@@ -16,16 +16,16 @@ public:
     std::vector<float>* vertices;
     std::string name;
 
-    Player(): 
-        drawColor(Color(DRAW_COLOR)),
+    Player(Color color = Color(DRAW_COLOR)): 
+        drawColor(color),
         breached(false), 
         name("___"), 
         numLines(0),
         vertices(new std::vector<float>),
         lines(new std::vector<Line>)
         { init(); };
-    Player(std::string name): 
-        drawColor(Color(DRAW_COLOR)), 
+    Player(std::string name, Color color = Color(DRAW_COLOR)): 
+        drawColor(color), 
         breached(false), 
         name(name), 
         numLines(0),

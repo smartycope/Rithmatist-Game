@@ -47,7 +47,7 @@
             main->insert(main->end(), append->begin(), append->end()); break; \
     }
 
-#define logVal(var) std::cout << g::getDebugCount() << ": " << #var << " = " << std::fixed << std::setprecision(1) << var << std::endl;
+#define logVal(var) std::cout << g::getDebugCount() << ": " << #var << " = " << std::fixed << std::setprecision(16) << var << std::endl;
 
 #define _print(message) std::cout << g::getDebugCount() << ": " << #message << std::endl;
 #define _endl std::cout << std::endl;
@@ -76,6 +76,16 @@
 0: No debug info
 5: All debug info
 */
+
+// This is to be able to have a reversed for-based range loop
+// template <typename T>
+// struct reversion_wrapper { T& iterable; };
+// template <typename T>
+// auto begin (reversion_wrapper<T> w) { return std::rbegin(w.iterable); }
+// template <typename T>
+// auto end (reversion_wrapper<T> w) { return std::rend(w.iterable); }
+// template <typename T>
+// reversion_wrapper<T> reverse (T&& iterable) { return { iterable }; }
 
 namespace g{
 
@@ -113,6 +123,8 @@ float round(float var, int digits = 1);
 ** Helper mode
 *** Whenever you draw a circle, lines appear subdividing it for you so you don't have to intuit it 
 *** (maybe change how many lines with the scrollwheel?)
+** Survival Mode!! 
+*** How long can YOU survive against a horde of wild chalklings?
 * Add an AI to play against
 * Add a starting screen
 * Add networking
@@ -120,4 +132,5 @@ float round(float var, int digits = 1);
 * Allow lines to get broken parts
 * Allow lines to get pushed back
 * Make it so when you draw, instead of regular lines, it looks like you're drawing chalk
+* Add a beginner option, for people who just learned, are drawing with a mouse, or both
 */ 

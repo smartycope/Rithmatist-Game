@@ -4,7 +4,9 @@
 
 #include <cstdio>
 #include <ctime>
+#include <iomanip>
 #include <string>
+#include <vector>
 
 
 
@@ -41,7 +43,7 @@ void Line::finish(Point end, bool identify){
     }
     else if (identify){
         identifyLine();
-        printAcc();
+        printAccDebug();
         // update();
     }
 }
@@ -96,8 +98,33 @@ void Line::printAcc(){
         // std::cout << g::getDebugCount() << ": " << "That is not a " << name << ". (" << std::setprecision(1) << std::fixed << accuracy << "%)\n";
 }
 
+void Line::printAccDebug(){
+    std::string name;
+
+    switch(lineType){
+        case Line::LINE_DOT:         name = "a dot";                 break;
+        case Line::LINE_UNKNOWN:     name = "unknown";               break;
+        case Line::LINE_MAKING:      name = "a Line of Making";      break;
+        case Line::LINE_REVOCATION:  name = "a Line of Revocation";  break;
+        case Line::LINE_VIGOR:       name = "a Line of Vigor";       break;
+        case Line::LINE_WARDING:     name = "a Line of Warding";     break;
+        case Line::LINE_FORBIDDENCE: name = "a Line of Forbiddence"; break;
+    }
+
+    std::cout << g::getDebugCount() << ": " << "The line is " << name << ", and it's accuracy is " << std::fixed << std::setprecision(5) << accuracy << ".\n";
+}
+
 std::vector<float>* Line::update(Color playersColor, bool isDot){
-    this->lineColor = playersColor;
+    // I hate operator overloads
+    if (this->lineColor != playersColor){
+    // if (this-> lineColor.r != playersColor.r or this-> lineColor.g != playersColor.g or this-> lineColor.b != playersColor.b or this-> lineColor.a != playersColor.a){
+        this->lineColor = playersColor;
+        vertices->clear(); 
+        // this->vertices = new std::vector<float>(reUpdate(*lineData, playersColor));
+        // return this->vertices;
+        // return vertices;
+    }
+
     if (isDot) lineType = LINE_DOT;
     // if (isFinished){
         // identifyLine();
@@ -163,6 +190,47 @@ bool Line::isNull(){
 
 void Line::append(Point where){
     lineData->push_back(where);
+}
+
+void Line::reUpdate(){
+    vertices->clear();
+    // I hate operator overloads
+    // if (lineData->front() != start)
+    //     lineData->insert(lineData->begin(), start);
+    // if (lineData->back() != end)
+    //     lineData->push_back(end);
+
+    // Becuase things can't just be easy...
+    for(int i = 0; i < lineData->size(); ++i)
+        addVertices((*lineData)[i].getVector());
+
+    // if (lineData->size())
+        // for(auto it: *lineData)
+            // addVertices(it.getVector());
+}
+
+std::vector<float> Line::reUpdate(std::vector<Point> line, const Color& color){
+    // I hate operator overloads
+    // if (lineData->front() != start)
+    //     lineData->insert(lineData->begin(), start);
+    // if (lineData->back() != end)
+    //     lineData->push_back(end);
+
+    std::vector<float> returnMe;
+
+    // Becuase things can't just be easy...
+    for(int i = 0; i < line.size(); ++i){
+        returnMe.push_back(line[i].getVector().first);
+        returnMe.push_back(line[i].getVector().second);
+        returnMe.push_back(color.r);
+        returnMe.push_back(color.g);
+        returnMe.push_back(color.b);
+        returnMe.push_back(color.a);
+    }
+
+    // if (lineData->size())
+        // for(auto it: *lineData)
+            // addVertices(it.getVector());
 }
 
 void Line::init() {}

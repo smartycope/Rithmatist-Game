@@ -22,6 +22,9 @@ public:
         b(round(float(b) / 255.0f, 1)), 
         a(round(float(a) / 255.0f, 1)) 
         {};
+
+    // bool operator==(const Color& r);
+    bool operator!=(const Color& r);
 };
 
 /*
