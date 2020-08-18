@@ -18,7 +18,9 @@ private:
     double getwavelength();
 
     // Used for circle and maybe ellipse
-    double getAverageRadius();
+    double getAverageRadius(bool efficent = true);
+    // Get the most likely center based on the radius of the circle
+    Point  getCenter(double radius);
     double getAverageDeviation(std::vector<Point> opt);
     // Exactly the same as getAverageDeviation(), but punishes distance from the line exponentially
     double getExponentialAverageDeviation(std::vector<Point> opt);
@@ -28,13 +30,19 @@ private:
     std::pair<int, double> findClosestPoint(Point target, std::vector<Point> comparator);
     // Gets the points furthest from each other in the vector
     std::pair<int, int> findFurthestPoints();
+    std::pair<int, double> findFurthestPoint(Point target, std::vector<Point> comparator);
     double getLineLength();
 
     double getDist(Point a, Point b);
     double getSlope(Point a, Point b);
-    double getAverage(const std::vector<int> &averagers);
-    bool  isCloseEnough(Point a, Point b, double threshold);
-    bool  isCloseEnough(double a, double b, double threshold);
+    double getAverage(const std::vector<double>& averagers);
+    Point  getAverage(const std::vector<Point>& averagers);
+    bool   isCloseEnough(Point a, Point b, double threshold);
+    bool   isCloseEnough(double a, double b, double threshold);
+    int    getLeftmostPoint();
+    int    getRightmostPoint();
+    int    getTopmostPoint();
+    int    getBottommostPoint();
     double clampToPercentage(double value, double perfect, double acceptableCuttoff, double failureCutoff);
 
 public:
@@ -46,7 +54,7 @@ public:
     std::vector<Point> genOptCircle(Point center, double radius, bool ordered = true); //todo This is false when not debugging
     std::vector<Point> genOptLine(Point start, Point end);
     std::vector<Point> genOptEllipse();
-    std::vector<Point> genOptSine(Point start, double wavelength, double amplitude, double cycles = 2.0f);
+    std::vector<Point> genOptSine(Point start, Point end, double wavelength, double amplitude, double cycles = 2.0f);
 
     Type identify();
 };

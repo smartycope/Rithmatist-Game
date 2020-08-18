@@ -6,7 +6,17 @@
 #include <vector>
 
 #define LINE_FORBIDDENCE_PRECISION 100.f
-#define PRECISION 2
+// In getExponentialAvergeDeviation(), use this value to punish distace
+#define DISTANCE_PENALTY_EXPONENT 2
+// How many radius samples are taken (the greater the number, the more accurate, but slower it's going to be)
+//  Put line->lineData->size() for max accuracy
+#define MAX_RADIUS_SAMPLES line->lineData->size()
+// Defines how many points forward or backward to check when assuming the circle's radius based on it's size
+//  Used in efficent getAverageRadius()
+#define OFFSET_CHECK_DISTANCE 10
+// Defines the step of the slow way of calculating getFurthestPoints() (smaller is slower, but more accurate)
+#define FIND_RADIUS_SLOW_EFFICENCY 1
+
 
 // This is to be able to have a reversed for-based range loop
 template <typename T>
@@ -255,8 +265,113 @@ std::vector<Point> Geometry::genOptEllipse(){
     return opt;
 }
 
-std::vector<Point> Geometry::genOptSine(Point start, double wavelength, double amplitude, double cycles){
+std::vector<Point> Geometry::genOptSine(Point start, Point end, double wavelength, double amplitude, double cycles){
     std::vector<Point> opt;
+
+    /**************** Formula of a Sine Wave *****************
+    * @p A amplitude
+    * @p f cycles
+    * @p t time
+    * @p shift phase shift
+    *
+    ** y(t) = A * sin(2 * PI * f * t + shift)
+    *                         or...
+    ** y(time) = amplitude * sin(2 * PI * cycles * time + phaseShift)
+    **********************************************************/
+
+
+
+
+/* 
+    Vector p1 = new PVector(10,10);
+    PVector p2 = new PVector(100,100);
+
+    float gFreq = 2; // frequency
+    float gAmp = 50; // amplitude in pixels
+
+
+    void sineTo(PVector p1, PVector p2, float freq, float amp){
+    float d = PVector.dist(p1,p2);
+    float a = atan2(p2.y-p1.y,p2.x-p1.x);
+        translate(p1.x,p1.y);
+        rotate(a);
+        beginShape();
+        for (float i = 0; i <= d; i += 1) {
+            vertex(i,sin(i*TWO_PI*freq/d)*amp);
+        }
+ */
+
+    // Again, so close...
+    double x, y;
+ 
+    for(x = start.x; x < (wavelength * cycles) + start.x; x += 2) {
+        y = amplitude * sin(2 * M_PI * (cycles / wavelength) * (x - start.x)) + start.y;
+        opt.push_back(Point(x, y));
+        // opt.push_back(Point(x, y));
+    }
+
+
+    /* supposed to draw a sine wave between 2 points
+    float v = atan2(end.y - start.y, end.x - start.x);
+    for(int i = start.x; i < (wavelength * cycles) + start.x; ++i){
+        int y = amplitude * sin(2 * M_PI * (cycles / wavelength) * (i - start.x) + 0) + start.y;
+        // sin(i / waveStretcher) * waveMultiplier;
+        // int y = sin(i / wavelength) * amplitude;
+        int rotatedY = i * cos(v)  + y * sin(v);
+        int x = i * -sin(v) + y * cos(v);
+        Point addMe;
+        opt.push_back(addMe.convTopLeft());
+    }
+    */
+
+    // float v = atan2(y2 - y1, x2 - x1);
+    // for(blabla){
+    //     calculate sinPosY from i
+    //     newSinPosY =    i*Cos(v)  + sinPosY*Sin(v);
+    //     sinPosX =    i*-Sin(v) + sinPosY*Cos(v));
+    //     add offset
+    //     render
+    // }
+
+
+
+    /* Aaaaaalmost works, but not quite, something's off...
+    cycles /= 2;
+    for(int x = start.x; x < (wavelength * cycles) + start.x; ++x)
+        opt.push_back(Point(x, amplitude * sin(2 * M_PI * (cycles / wavelength) * (x - start.x) + 0) + start.y));
+    */
+
+    /*
+    double angle = 0.0;
+    for(int x = start.x; x < (wavelength * cycles) + start.x; ++x){
+        opt.push_back(Point(x, int(amplitude * sin(angle) + start.y)));
+        angle += (2 * M_PI) / wavelength;
+    }
+    */
+
+    // for (int x = 0; x < wavelength; ++x){
+    //     auto y[wavelength] = amplitude * sin (2 * M_PI * (cycles / NUM_POINTS) * wavelength + 0);//  + ZERO_OFFSET;
+    //                                                       ^^^ f = 15 cycles / NUM_POINTS = 0.15 Hz
+    // }
+    // loop from y[0] to y[wav]
+
+
+
+    /* Some algorithm I found from TI that apparently they put in their graphing caclulators
+    int x = 0;
+    const short A = (1.975/2 * 32768); // (1.975/2 * 32768) = 0x7e66 -- this was origionally a short
+    short y[3] = {0, 0x1209, 0};       // (0.1409 * 32768)  = 0x1209 -- this was origionally a short
+    for(int i = 0; i < 40; i++){
+        y[0] = (((A * y[1]) >> 15) + ((A * y[1]) >> 15)) - y[2];
+        y[2] = y[1]; // y2 <–– y1
+        y[1] = y[0]; // y1 <–– y0
+        // output = y[0];
+        opt.push_back(Point(x, y[0]));
+        ++x;
+    }
+    */
+
+
     return opt;
 }
 
@@ -267,7 +382,21 @@ double Geometry::getAccuracy(Line::Type bestGuess){
         case LINE_MAKING:
         case LINE_REVOCATION:
         case LINE_VIGOR:
+        {
+            // std::vector<Point> optSine = genOptSine(line->start, 6., 6.);
+            return NAN; // Fun note: breaking here instead of returning gives you an "Illegal instruction" error            
+        }
         case LINE_WARDING:
+        {
+            double radius = getAverageRadius(false);
+            Point  center = getCenter(radius);
+
+            std::vector<Point> optCircle = genOptCircle(center, radius, false);
+
+            double answer = 100 - getAverageDeviation(optCircle) - (getGreatestDeviation(optCircle).second * 2);
+
+            return answer < 0 ? 0 : answer; // If it's negative, just say 0.
+        }
         case LINE_FORBIDDENCE:
         {   // getAverageDeviation() here can be approximated with getDist(start, end) / getLineLength().
             std::vector<Point> optLine = genOptLine(line->start, line->end);
@@ -285,7 +414,6 @@ double Geometry::getAccuracy(Line::Type bestGuess){
             break;
     }
 }
-
 // Finds the closest point in the list to what it's given
 std::pair<int, double> Geometry::findClosestPoint(Point target, std::vector<Point> comparator){
     int index = 0;
@@ -303,14 +431,79 @@ std::pair<int, double> Geometry::findClosestPoint(Point target, std::vector<Poin
 }
 // Gets the points furthest from each other in the vector
 std::pair<int, int> Geometry::findFurthestPoints(){
-    int a, b;
+    // I'm just going to assume it's at least vaugely a circle shape
+    int a, b, i = 0;
+
+    for (; i < line->lineData->size(); i += FIND_RADIUS_SLOW_EFFICENCY){
+
+    }
+
     return std::pair<int, int>(a, b);
 }
-// Self explanitory (used for circle and ellipse)
-double Geometry::getAverageRadius(){
-    std::vector<int> radii;
+// Finds the furthest point in the list to what it's given
+std::pair<int, double> Geometry::findFurthestPoint(Point target, std::vector<Point> comparator){
+    int index = 0;
+    double finalDist = 0, current;
+
+    for (int i = 0; i < comparator.size(); ++i){
+        current = getDist(target, comparator[i]);
+        if (current > finalDist){
+            finalDist = current;
+            index = i;
+        }
+    }
+    // logVal(finalDist)
+    return std::pair<int, double>(index, finalDist);
+}
+
+double Geometry::getAverageRadius(bool efficent){
+    std::vector<double> radii;
+    int samples = MAX_RADIUS_SAMPLES;
+
+    // The smarter way of doing things
+    if (efficent){
+        _log("Effeciently calculating radius...");
+        auto sampler = line->lineData->begin();
+        auto antiSampler = line->lineData->begin() + (lineData->size() / 2);
+
+        while (samples){
+            double finalDist = getDist(*sampler, *antiSampler);
+
+            if (getDist(*sampler, *antiSampler) == finalDist)
+                break;
+            else if (getDist(*sampler, *(antiSampler + 1)) > finalDist)
+                while(getDist(*sampler, *(++antiSampler)) > finalDist) { }
+            else if (getDist(*sampler, *(antiSampler + 1)) > finalDist)
+                while(getDist(*sampler, *(--antiSampler)) > finalDist) { }
+
+            radii.push_back(getDist(*sampler, *antiSampler) / 2);
+
+            --samples;
+        }
+    }
+    // The easy way of doing things
+    else{
+        _log("Ineffeciently calculating radius...");
+        for(auto it = line->lineData->begin(); it < line->lineData->end(); it += (line->lineData->size() / MAX_RADIUS_SAMPLES))
+            radii.push_back(findFurthestPoint(*it, *line->lineData).second / 2);
+    }
 
     return getAverage(radii);
+}
+
+Point Geometry::getCenter(double radius){
+    Point rightmost  = (*line->lineData)[getRightmostPoint()];
+    Point leftmost   = (*line->lineData)[getLeftmostPoint()];
+    Point topmost    = (*line->lineData)[getTopmostPoint()];
+    Point bottommost = (*line->lineData)[getBottommostPoint()];
+    Point rightSays (rightmost.x - radius, rightmost.y);
+    Point leftSays  (leftmost.x  + radius, leftmost.y );
+    Point topSays   (topmost.x   , topmost.y    + radius);
+    Point bottomSays(bottommost.x, bottommost.y - radius);
+
+    std::vector<Point> centers = {rightSays, leftSays, topSays, bottomSays};
+    Point avg = getAverage(centers);
+    return avg;
 }
 
 double Geometry::getAverageDeviation(std::vector<Point> opt){
@@ -330,7 +523,7 @@ double Geometry::getExponentialAverageDeviation(std::vector<Point> opt){
     int i = 0;
     double netDist = 0.f;
     for(; i < line->lineData->size(); ++i){
-        netDist += pow(fabs(findClosestPoint((*line->lineData)[i], opt).second), PRECISION);
+        netDist += pow(fabs(findClosestPoint((*line->lineData)[i], opt).second), DISTANCE_PENALTY_EXPONENT);
     }
     // logVal(this->line->lineData->size())
     // logVal(i)
@@ -362,11 +555,10 @@ std::pair<int, double> Geometry::getGreatestDeviation(std::vector<Point> opt){
 
     return std::pair<int, double>(index, finalDist);
 }
-
 // Guesses what type of line this Line is
 Line::Type Geometry::guessType(){
 
-    return LINE_FORBIDDENCE; //! For debugging
+    // return LINE_FORBIDDENCE; //! For debugging
 
     assert(line->isFinished and not line->isNull());
     if (line->lineData->size() == 1)
@@ -427,11 +619,20 @@ double Geometry::getLineLength(){
     return total + 1;
 }
 
-double Geometry::getAverage(const std::vector<int> &averagers){
-    int total = 0;
+double Geometry::getAverage(const std::vector<double>& averagers){
+    double total = 0;
     for (auto i: averagers)
         total += i;
     return total / averagers.size();
+}
+
+Point Geometry::getAverage(const std::vector<Point>& averagers){
+    Point total;
+    for (auto i: averagers){
+        total.x += i.x;
+        total.y += i.y;
+    }
+    return Point(total.x / averagers.size(), total.y / averagers.size());
 }
 
 double Geometry::getDist(Point a, Point b){
@@ -455,6 +656,50 @@ bool Geometry::isCloseEnough(double a, double b, double threshold){
         return true;
     else 
         return false;
+}
+
+int Geometry::getLeftmostPoint(){
+    int smallestX = 10000, index;
+    for(int i = 0; i < line->lineData->size(); ++i){
+        if ((*line->lineData)[i].x < smallestX){
+            smallestX = (*line->lineData)[i].x;
+            index = i;
+        }
+    }
+    return index;
+}
+
+int Geometry::getRightmostPoint(){
+    int largestX = 0, index;
+    for(int i = 0; i < line->lineData->size(); ++i){
+        if ((*line->lineData)[i].x > largestX){
+            largestX = (*line->lineData)[i].x;
+            index = i;
+        }
+    }
+    return index;
+}
+
+int Geometry::getTopmostPoint(){
+    int smallestY = 10000, index;
+    for(int i = 0; i < line->lineData->size(); ++i){
+        if ((*line->lineData)[i].y < smallestY){
+            smallestY = (*line->lineData)[i].y;
+            index = i;
+        }
+    }
+    return index;
+}
+
+int Geometry::getBottommostPoint(){
+    int largestY = 0, index;
+    for(int i = 0; i < line->lineData->size(); ++i){
+        if ((*line->lineData)[i].y > largestY){
+            largestY = (*line->lineData)[i].y;
+            index = i;
+        }
+    }
+    return index;
 }
 
 double Geometry::clampToPercentage(double value, double perfect, double acceptableCutoff, double failureCutoff){

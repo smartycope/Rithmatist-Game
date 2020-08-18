@@ -49,7 +49,7 @@
 
 #define logVal(var) std::cout << g::getDebugCount() << ": " << #var << " = " << std::fixed << std::setprecision(16) << var << std::endl;
 
-#define _print(message) std::cout << g::getDebugCount() << ": " << #message << std::endl;
+#define _print(message) std::cout << g::getDebugCount() << ": " << #message;
 #define _endl std::cout << std::endl;
 #define _rawprint(message) std::cout << ": " << #message;
 #define _log g::log

@@ -65,15 +65,6 @@ void Gui::initGLEW(){
         std::cerr << "Failed to initialize GLEW\n";
         exit(1);
     }
-
-    // GLuint vertexBuffer;
-    // glGenBuffers(1, &vertexBuffer);
-
-    // printf("%u\n", vertexBuffer);
-
-    // std::cout << glGenBuffers << std::endl;
-
-    g::log("Successfully set up GLEW.");
 }
 
 void Gui::initLines(){
@@ -255,25 +246,42 @@ void Gui::draw(bool points){
 
 void Gui::addManualLines(Player player){
     Geometry creator;
-
-    // Make the straight line
     Point center(243, 150);
+ 
+    //* Make a Straight Line
     Point randEnd(125, 185);
     auto straightData = creator.genOptLine(center, randEnd);
     Line optStraight(center, randEnd, straightData);
 
-    // Make the circle
+    //* Make a Circle
     int radius = 50;
     auto circleData = creator.genOptCircle(center, radius, false);
     Line optCircle(Point(center.x + radius, center.y), Point(center.x + radius, center.y), circleData);
 
-    // Analyze the straight line
-    optStraight.identifyLine();
-    optStraight.printAccDebug();
+    //* Make a Sine Wave
+    double amplitude  = 10.;
+    double wavelength = 10.;
+    double cycles     = 4.;
+    Point someEnding(375, 145);
+    auto sineData = creator.genOptSine(center, someEnding, wavelength, amplitude, cycles);
+    Line optSine(center, someEnding, sineData);
 
-    // Add the lines
-    player.lines->push_back(optStraight);
-    player.lines->push_back(optCircle);
+    //* Analyze the straight line
+    // optStraight.identifyLine();
+    // optStraight.printAccDebug();
+
+    //* Analyze the cirlce
+    // optCircle.identifyLine();
+    // optCircle.printAccDebug();
+
+    //* Analyze the sine wave
+    // optSine.identifyLine();
+    // optSine.printAccDebug();
+
+    //* Add the lines
+    // player.lines->push_back(optStraight);
+    // player.lines->push_back(optCircle);
+    player.lines->push_back(optSine);
 
     // Update the lines
     updateLines();
@@ -291,7 +299,7 @@ void Gui::run(){
     // logVal(circleData.size())
 
     SDL_Event event;
-    bool fullscreen = false, run = true, trackMouse = false, drawPoints = false;
+    bool fullscreen = false, run = true, trackMouse = false, drawPoints = true;
     bool identify = true;
     bool shift = false, ctrl = false, alt = false;
     Uint32 windowFlags = 0; // fudge variable
@@ -460,12 +468,12 @@ void Gui::run(){
         }
 
         //* For debugging
-        if (USER.lines->size() and USER.lines->back().isFinished){
-            Geometry creator(&(USER.lines->back()));
-            ROOT.lines->push_back(Line(USER.lines->back().start, USER.lines->back().end, creator.genOptLine(USER.lines->back().start, USER.lines->back().end)));
-        }
+        // if (USER.lines->size() and USER.lines->back().isFinished){
+        //     Geometry creator(&(USER.lines->back()));
+        //     ROOT.lines->push_back(Line(USER.lines->back().start, USER.lines->back().end, creator.genOptLine(USER.lines->back().start, USER.lines->back().end)));
+        // }
 
-        if(not (halfSecondDelay % 10)){
+        if(not (halfSecondDelay % 30)){
             // if (animationIndex < circleData.size()){
             //     // addData("root", circleData[animationIndex]);
             //     addLine("root", circleData[animationIndex]);
