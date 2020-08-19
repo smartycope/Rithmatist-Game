@@ -125,6 +125,9 @@ float round(float var, int digits = 1);
 *** (maybe change how many lines with the scrollwheel?)
 ** Survival Mode!! 
 *** How long can YOU survive against a horde of wild chalklings?
+** Autocorrect Mode
+*** Maybe consider folding this into another mode, but having the program, when you finish drawing a line,
+***    delete it and replace it with the optimal version of that line.
 * Add an AI to play against
 * Add a starting screen
 * Add networking

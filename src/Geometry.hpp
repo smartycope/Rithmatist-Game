@@ -49,12 +49,12 @@ public:
     Geometry():        line(nullptr) {}; // only use with generator functions
     Geometry(Line* l): line(l)       {};
 
-    // These are used to manually create lines (that's why they're public)
+    // These can be used to manually create lines (that's why they're public)
     // Generate vectors filled with the points required to draw the "perfect" shape
-    std::vector<Point> genOptCircle(Point center, double radius, bool ordered = true); //todo This is false when not debugging
+    std::vector<Point> genOptCircle(Point center, double radius, bool ordered = false);
     std::vector<Point> genOptLine(Point start, Point end);
     std::vector<Point> genOptEllipse();
-    std::vector<Point> genOptSine(Point start, Point end, double wavelength, double amplitude, double cycles = 2.0f);
+    std::vector<Point> genOptSine(Point start, Point end, double wavelength, double amplitude, double cycles = 2.0f, bool niceLooking = false);
 
     Type identify();
 };

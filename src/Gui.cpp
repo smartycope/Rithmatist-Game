@@ -259,12 +259,13 @@ void Gui::addManualLines(Player player){
     Line optCircle(Point(center.x + radius, center.y), Point(center.x + radius, center.y), circleData);
 
     //* Make a Sine Wave
-    double amplitude  = 10.;
-    double wavelength = 10.;
+    double amplitude  = 20.;
+    double wavelength = 40.;
     double cycles     = 4.;
-    Point someEnding(375, 145);
-    auto sineData = creator.genOptSine(center, someEnding, wavelength, amplitude, cycles);
-    Line optSine(center, someEnding, sineData);
+    // Point someEnding(center.x, center.y + 50);
+    Point someEnding(375, center.y - 73); //TODO mess with these values (x is touchy)
+    auto  sineData = creator.genOptSine(center, someEnding, wavelength, amplitude, cycles, true);
+    Line  optSine(center, someEnding, sineData);
 
     //* Analyze the straight line
     // optStraight.identifyLine();

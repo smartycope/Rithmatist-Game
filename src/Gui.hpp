@@ -23,13 +23,13 @@ namespace g{ extern unsigned int windowWidth, windowHeight; }
 
 class Gui{
 private:
-    Arena arena;
+    // Arena arena;
     Color drawColor;
     GLint colorLoc;
 
     //std::vector<int> indecies;
     Point windowPosition;
-    SDL_Window* window;
+    // SDL_Window* window;
     SDL_GLContext context;
     GLuint vao;
     GLuint shaderProgram;
@@ -53,12 +53,15 @@ private:
     void updateMouse(int x, int y);
     
 public:
+    SDL_Window* window; // TODO Please figure out inheritance syntax sometime...
+    Arena arena;        // todo here too
     unsigned int width, height;
     Point mouseLoc;
 
-    // Gui() {}; // just for getting the window width and height 
-    Gui(std::string title, unsigned int width, unsigned int height):                     
-        width(width), 
+    // Only for Nuklear, so it can initalize without having to create a new window
+    Gui() {};
+    Gui(std::string title, unsigned int width, unsigned int height):
+        width(width),
         height(height),
         windowPosition(Point(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED))
         { init(title); };

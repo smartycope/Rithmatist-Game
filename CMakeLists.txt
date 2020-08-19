@@ -11,6 +11,11 @@ set(CMAKE_CXX_FLAGS "-pthread")
 
 set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 
+# Include dependancies
+# set(CMAKE_INCLUDE_PATH ${PROJECT_SOURCE_DIR}/dep)
+
+set(NUKLEAR_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dep)
+
 # put the binaries where I want them
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -39,32 +44,31 @@ set(SRC_LIST
     ${CMAKE_SOURCE_DIR}/src/Arena.cpp
     ${CMAKE_SOURCE_DIR}/src/Gui.cpp
     ${CMAKE_SOURCE_DIR}/src/Line.cpp
-    # ${CMAKE_SOURCE_DIR}/src/LineForbiddence.cpp
-    # ${CMAKE_SOURCE_DIR}/src/LineMaking.cpp
-    # ${CMAKE_SOURCE_DIR}/src/LineVigor.cpp
-    # ${CMAKE_SOURCE_DIR}/src/LineWarding.cpp
-    # ${CMAKE_SOURCE_DIR}/src/Debug.hpp
     ${CMAKE_SOURCE_DIR}/src/Geometry.cpp
     ${CMAKE_SOURCE_DIR}/src/Globals.cpp
     ${CMAKE_SOURCE_DIR}/src/Point.cpp
     ${CMAKE_SOURCE_DIR}/src/Color.cpp
     ${CMAKE_SOURCE_DIR}/src/Player.cpp
     ${CMAKE_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/Nuklear.cpp
+)
+
+set(DEP_LIST
+    ${CMAKE_SOURCE_DIR}/src/nuklear.h
+    ${CMAKE_SOURCE_DIR}/src/nuklear_sdl_gl3.h
 )
 
 include_directories(
     ${SDL2_INCLUDE_DIRS}
     ${GLEW_INCLUDE_DIRS}
     ${OPENGL_INCLUDE_DIRS}
+    # ${NUKLEAR_INCLUDE_DIR}
 )
 
 set(BINARY_NAME "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}")
 
-add_executable(${BINARY_NAME} ${SRC_LIST})
+add_executable(${BINARY_NAME} ${DEP_LIST} ${SRC_LIST})
 
 #link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES})
 target_link_libraries(${BINARY_NAME} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} dl)
 #target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
-
-
-# std::basic_ostream<char, std::char_traits<char> >& std::operator<< <std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char)@GLIBCXX_3.4 (2)

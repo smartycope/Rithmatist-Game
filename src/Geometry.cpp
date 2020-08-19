@@ -265,7 +265,7 @@ std::vector<Point> Geometry::genOptEllipse(){
     return opt;
 }
 
-std::vector<Point> Geometry::genOptSine(Point start, Point end, double wavelength, double amplitude, double cycles){
+std::vector<Point> Geometry::genOptSine(Point start, Point end, double wavelength, double amplitude, double cycles, bool niceLooking){
     std::vector<Point> opt;
 
     /**************** Formula of a Sine Wave *****************
@@ -279,7 +279,7 @@ std::vector<Point> Geometry::genOptSine(Point start, Point end, double wavelengt
     ** y(time) = amplitude * sin(2 * PI * cycles * time + phaseShift)
     **********************************************************/
 
-
+    
 
 
 /* 
@@ -301,15 +301,44 @@ std::vector<Point> Geometry::genOptSine(Point start, Point end, double wavelengt
         }
  */
 
-    // Again, so close...
+    // This should NOT have been this difficult to figure out.
+
+    // Create the actuall sine wave
     double x, y;
- 
-    for(x = start.x; x < (wavelength * cycles) + start.x; x += 2) {
-        y = amplitude * sin(2 * M_PI * (cycles / wavelength) * (x - start.x)) + start.y;
-        opt.push_back(Point(x, y));
-        // opt.push_back(Point(x, y));
+    double verticalShift = start.y, phaseShift = 7.;
+
+    // for(x = start.x; x < (wavelength * cycles) + start.x; ++x){
+    //     // y = amplitude * sin(2 * M_PI * (cycles / wavelength) * (x - start.x)) + start.y;
+    //     y = amplitude * sin(((2 * M_PI) * (x + phaseShift)) / wavelength) + verticalShift;
+    //     opt.push_back(Point(x, y));
+    // }
+
+    start.convCenter();
+    end.convCenter();
+
+    // Then change the angle of that sine wave
+    double v = atan2(end.y - start.y, end.x - start.x);
+    for(x = start.x; x < (wavelength * cycles) + start.x; ++x){
+        y = amplitude * sin(((2 * M_PI) * (x + phaseShift)) / wavelength) + verticalShift;
+        int newY = x *  cos(v)  + y * sin(v);
+        int newX = x * -sin(v)  + y * cos(v);
+        opt.push_back(Point(newX, newY));
     }
 
+
+    // Because that only generate one point per x, draw lines between the points for comparing
+    //  (actually looks slightly worse when drawn with OpenGL this way)
+    if (not niceLooking){
+        std::vector<Point> tmpOpt = opt;
+        opt.clear();
+        assert(tmpOpt.size() > 2);
+        for(auto it = tmpOpt.begin() + 1; it < tmpOpt.end(); ++it){
+            // opt.push_back(*(it - 1));
+            std::vector<Point> tmp = genOptLine(*it, *(it - 1));
+            appendVector(opt, tmp);
+            // opt.push_back(*it);
+        }
+    }
 
     /* supposed to draw a sine wave between 2 points
     float v = atan2(end.y - start.y, end.x - start.x);
