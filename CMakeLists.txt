@@ -7,14 +7,14 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_C_COMPILER clang)
 #set(CMAKE_CXX_FLAGS "-lpthread -lm")
-set(CMAKE_CXX_FLAGS "-pthread")
+set(CMAKE_CXX_FLAGS "-pthread -Wdeprecated-enum-enum-conversion")
 
 set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 
 # Include dependancies
 # set(CMAKE_INCLUDE_PATH ${PROJECT_SOURCE_DIR}/dep)
 
-set(NUKLEAR_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dep)
+# set(NUKLEAR_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dep)
 
 # put the binaries where I want them
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -50,13 +50,15 @@ set(SRC_LIST
     ${CMAKE_SOURCE_DIR}/src/Color.cpp
     ${CMAKE_SOURCE_DIR}/src/Player.cpp
     ${CMAKE_SOURCE_DIR}/src/main.cpp
-    ${CMAKE_SOURCE_DIR}/src/Nuklear.cpp
+    # ${CMAKE_SOURCE_DIR}/src/Nuklear.cpp
+    # ${CMAKE_SOURCE_DIR}/src/nuklear.h
+    # ${CMAKE_SOURCE_DIR}/src/nuklear_sdl_gl3.h
 )
 
-set(DEP_LIST
-    ${CMAKE_SOURCE_DIR}/src/nuklear.h
-    ${CMAKE_SOURCE_DIR}/src/nuklear_sdl_gl3.h
-)
+# set(DEP_LIST
+#     ${CMAKE_SOURCE_DIR}/src/nuklear.h
+#     ${CMAKE_SOURCE_DIR}/src/nuklear_sdl_gl3.h
+# )
 
 include_directories(
     ${SDL2_INCLUDE_DIRS}
@@ -67,7 +69,7 @@ include_directories(
 
 set(BINARY_NAME "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}")
 
-add_executable(${BINARY_NAME} ${DEP_LIST} ${SRC_LIST})
+add_executable(${BINARY_NAME} ${SRC_LIST})
 
 #link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES})
 target_link_libraries(${BINARY_NAME} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} dl)
