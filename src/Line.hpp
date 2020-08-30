@@ -37,6 +37,15 @@ public:
     std::vector<float>* vertices;
     bool isFinished;
 
+    Line(const Line& l):
+        start(l.start), 
+        lineColor(l.lineColor),
+        isFinished(l.isFinished),
+        accuracy(l.accuracy),
+        lineType(l.lineType),
+        lineData(l.lineData),
+        vertices(l.vertices)
+        {};
     Line(Point start = Point()): 
         start(start), 
         lineColor(Color()),
@@ -73,13 +82,18 @@ public:
     Type identifyLine();
     void finish(Point end, bool identify = true);
     void finish(Point end, const std::vector<Point> data, bool identify = true);
-    int  getDataLen();
+    const int getDataLen();
     std::vector<Point>* getData(); //! Depricated
     void erase();
     std::vector<float>* update(Color playersColor = Color(), bool isDot = false);
     void init();
-    bool isNull();
+    const bool isNull();
     void append(Point where);
-    void printAcc();
-    void printAccDebug();
+    const void printAcc();
+    const void printAccDebug();
+    const void print(std::string name = "");
+    const std::string getTypeName(Type type);
+    const std::string getTypeName();
+
+    // void operator=(const Line& r);
 };

@@ -2,6 +2,7 @@
 
 #include "Globals.hpp"
 #include "Line.hpp"
+#include "StdMathFunc.hpp"
 
 #include <vector>
 
@@ -14,47 +15,37 @@ private:
 
     double getAccuracy(Line::Type bestGuess);
 
-    double getAmplitude();
-    double getwavelength();
+    // Based on how these are calculated, it's much easier to do them together.
+    // void getSineData(double& amplitude, double& wavelength, double& cycles, double& phaseShift);
 
     // Used for circle and maybe ellipse
     double getAverageRadius(bool efficent = true);
+    
     // Get the most likely center based on the radius of the circle
-    Point  getCenter(double radius);
-    double getAverageDeviation(std::vector<Point> opt);
-    // Exactly the same as getAverageDeviation(), but punishes distance from the line exponentially
-    double getExponentialAverageDeviation(std::vector<Point> opt);
-    double getTotalDeviation(std::vector<Point> opt);
-    std::pair<int, double> getGreatestDeviation(std::vector<Point> opt);
-    // Finds the closest point in the list to what it's given
-    std::pair<int, double> findClosestPoint(Point target, std::vector<Point> comparator);
-    // Gets the points furthest from each other in the vector
-    std::pair<int, int> findFurthestPoints();
-    std::pair<int, double> findFurthestPoint(Point target, std::vector<Point> comparator);
-    double getLineLength();
+    Point getCenter(double radius);
 
-    double getDist(Point a, Point b);
-    double getSlope(Point a, Point b);
-    double getAverage(const std::vector<double>& averagers);
-    Point  getAverage(const std::vector<Point>& averagers);
-    bool   isCloseEnough(Point a, Point b, double threshold);
-    bool   isCloseEnough(double a, double b, double threshold);
-    int    getLeftmostPoint();
-    int    getRightmostPoint();
-    int    getTopmostPoint();
-    int    getBottommostPoint();
-    double clampToPercentage(double value, double perfect, double acceptableCuttoff, double failureCutoff);
+    // Returns true if the first hump goes up instead of down
+    bool getHumps(const std::vector<Point>& lineData, std::vector<int>& topHumps, std::vector<int>& bottomHumps);
+
 
 public:
-    Geometry():        line(nullptr) {}; // only use with generator functions
-    Geometry(Line* l): line(l)       {};
+    Geometry():        line(nullptr)     {}; // only use with generator functions
+    Geometry(Line* l): line(l)           {};
+    ~Geometry();
 
     // These can be used to manually create lines (that's why they're public)
     // Generate vectors filled with the points required to draw the "perfect" shape
     std::vector<Point> genOptCircle(Point center, double radius, bool ordered = false);
     std::vector<Point> genOptLine(Point start, Point end);
     std::vector<Point> genOptEllipse();
-    std::vector<Point> genOptSine(Point start, Point end, double wavelength, double amplitude, double cycles = 2.0f, bool niceLooking = false);
+    /** WARNING:
+    * This fuction does not clamp the length of the sine wave between the start and end points. They are there to get the proper angle
+    * of the wave. You have to input the correct number of cycles yourself to get the right length. */
+    std::vector<Point> genOptSine(Point start, Point end, double wavelength, double amplitude, double cycles = 2., double phaseShift = 7., bool niceLooking = false);
+
+
+    //* These are here solely for debuggin purpouses
+    void getSineData(double& amplitude, double& wavelength, double& cycles, double& phaseShift, double& maxAmpDev);
 
     Type identify();
 };

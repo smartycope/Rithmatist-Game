@@ -16,14 +16,23 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
-NK_API struct nk_context*   nk_sdl_init(SDL_Window *win);
-NK_API void                 nk_sdl_font_stash_begin(struct nk_font_atlas **atlas);
-NK_API void                 nk_sdl_font_stash_end(void);
-NK_API int                  nk_sdl_handle_event(SDL_Event *evt);
-NK_API void                 nk_sdl_render(enum nk_anti_aliasing , int max_vertex_buffer, int max_element_buffer);
-NK_API void                 nk_sdl_shutdown(void);
-NK_API void                 nk_sdl_device_destroy(void);
-NK_API void                 nk_sdl_device_create(void);
+// NK_API struct nk_context*   nk_sdl_init(SDL_Window *win);
+// NK_API void                 nk_sdl_font_stash_begin(struct nk_font_atlas **atlas);
+// NK_API void                 nk_sdl_font_stash_end(void);
+// NK_API int                  nk_sdl_handle_event(SDL_Event *evt);
+// NK_API void                 nk_sdl_render(enum nk_anti_aliasing , int max_vertex_buffer, int max_element_buffer);
+// NK_API void                 nk_sdl_shutdown(void);
+// NK_API void                 nk_sdl_device_destroy(void);
+// NK_API void                 nk_sdl_device_create(void);
+
+struct nk_context*   nk_sdl_init(SDL_Window *win);
+void                 nk_sdl_font_stash_begin(struct nk_font_atlas **atlas);
+void                 nk_sdl_font_stash_end(void);
+int                  nk_sdl_handle_event(SDL_Event *evt);
+void                 nk_sdl_render(enum nk_anti_aliasing , int max_vertex_buffer, int max_element_buffer);
+void                 nk_sdl_shutdown(void);
+void                 nk_sdl_device_destroy(void);
+void                 nk_sdl_device_create(void);
 
 #endif
 
@@ -243,7 +252,8 @@ nk_sdl_render(enum nk_anti_aliasing AA, int max_vertex_buffer, int max_element_b
                 {NK_VERTEX_COLOR, NK_FORMAT_R8G8B8A8, NK_OFFSETOF(struct nk_sdl_vertex, col)},
                 {NK_VERTEX_LAYOUT_END}
             };
-            NK_MEMSET(&config, 0, sizeof(config));
+            // NK_MEMSET(&config, 0, sizeof(config));
+            memset(&config, 0, sizeof(config));
             config.vertex_layout = vertex_layout;
             config.vertex_size = sizeof(struct nk_sdl_vertex);
             config.vertex_alignment = NK_ALIGNOF(struct nk_sdl_vertex);

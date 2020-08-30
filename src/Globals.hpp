@@ -48,6 +48,7 @@
     }
 
 #define logVal(var) std::cout << g::getDebugCount() << ": " << #var << " = " << std::fixed << std::setprecision(16) << var << std::endl;
+#define logNamedVal(var, name) std::cout << g::getDebugCount() << ": " << #name << " = " << std::fixed << std::setprecision(16) << var << std::endl;
 
 #define _print(message) std::cout << g::getDebugCount() << ": " << #message;
 #define _endl std::cout << std::endl;
@@ -109,7 +110,7 @@ float round(float var, int digits = 1);
 /*////////////////////////////////////////////////TODO://////////////////////////////////////////////////////
 * Finish making lines eraseable
 * Line::IdentifyLine() function
-* Hook up GUI for a menu (imgui, nuklear)
+//? Hook up GUI for a menu (imgui, nuklear)
 ** Add options to menu
 *** Chalk color
 * Add modes

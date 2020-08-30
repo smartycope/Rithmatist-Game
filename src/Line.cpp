@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <cmath>
 
 
 
@@ -20,7 +21,7 @@ Line::Type Line::identifyLine(){
     return geo.identify();
 }
 
-int Line::getDataLen(){
+const int Line::getDataLen(){
     int len = lineData->size();
 
     // check if start/end are empty, if so, add them
@@ -76,7 +77,7 @@ void Line::erase(){
     // vertices->clear();
 }
 
-void Line::printAcc(){
+const void Line::printAcc(){
     std::string name;
 
     switch(lineType){
@@ -98,7 +99,7 @@ void Line::printAcc(){
         // std::cout << g::getDebugCount() << ": " << "That is not a " << name << ". (" << std::setprecision(1) << std::fixed << accuracy << "%)\n";
 }
 
-void Line::printAccDebug(){
+const void Line::printAccDebug(){
     std::string name;
 
     switch(lineType){
@@ -184,7 +185,7 @@ void Line::addVertices(std::pair<float, float> coord){
     vertices->push_back(lineColor.a);
 }
 
-bool Line::isNull(){
+const bool Line::isNull(){
     return start.isNull and accuracy == -2;
 }
 
@@ -231,7 +232,65 @@ std::vector<float> Line::reUpdate(std::vector<Point> line, const Color& color){
     // if (lineData->size())
         // for(auto it: *lineData)
             // addVertices(it.getVector());
+    return returnMe;
 }
+
+
+const void Line::print(std::string name){
+    unsigned long count = g::getDebugCount();
+    
+    short length = floor(log10(count)) + 4;
+
+    std::string filler(length, ' ');
+
+    std::cout << count  << ": {" << (name.size() ? name + "::": "") << "Line:\n"
+              << filler << "Start = (" << start.x << ", " << start.y << ")\n"
+              << filler << "End = (" << end.x << ", " << end.y << ")\n"
+              << filler << "Line Data Size = " << lineData->size() << "\n"
+              << filler << "Vertices Size = " << vertices->size() << " (/ 6 = " << vertices->size() / 6 << ")\n"
+              << filler << "Type = " << getTypeName() << "\n"
+              << filler << "Accuracy = " << std::fixed << std::setprecision(3) << accuracy << "\n"
+              << filler << "Line Color = [" << lineColor.r << ", " << lineColor.g << ", " << lineColor.b << ", " << lineColor.a << "]\n"
+              << filler << (isFinished ? "Is Finished": "Is Not Finished") << " and\n"
+              << filler << (isNull() ? "Is Null": "Is Not Null") << "\n}\n";
+}
+
+const std::string Line::getTypeName(Type type){
+    switch(type){
+        case Line::LINE_DOT:         return "dot";
+        case Line::LINE_UNKNOWN:     return "unknown";
+        case Line::LINE_MAKING:      return "Line of Making";
+        case Line::LINE_REVOCATION:  return "Line of Revocation";
+        case Line::LINE_VIGOR:       return "Line of Vigor";
+        case Line::LINE_WARDING:     return "Line of Warding";
+        case Line::LINE_FORBIDDENCE: return "Line of Forbiddence";
+    }
+}
+
+const std::string Line::getTypeName(){
+    switch(this->lineType){
+        case Line::LINE_DOT:         return "dot";
+        case Line::LINE_UNKNOWN:     return "unknown";
+        case Line::LINE_MAKING:      return "Line of Making";
+        case Line::LINE_REVOCATION:  return "Line of Revocation";
+        case Line::LINE_VIGOR:       return "Line of Vigor";
+        case Line::LINE_WARDING:     return "Line of Warding";
+        case Line::LINE_FORBIDDENCE: return "Line of Forbiddence";
+    }
+}
+
+
+// void Line::operator=(const Line& r){
+//     this->start = r.start;
+//     this->end   = r.end;
+//     this->lineData = r.lineData;
+//     this->vertices = r.vertices;
+//     this->lineType = r.lineType;
+//     this->accuracy = r.accuracy;
+//     this->lineColor  = r.lineColor;
+//     this->isFinished = r.isFinished;
+// }
+
 
 void Line::init() {}
 
@@ -274,3 +333,4 @@ std::vector<float> Player::update(){
     return tmp2;
 }
  */
+

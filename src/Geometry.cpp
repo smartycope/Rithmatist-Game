@@ -1,13 +1,17 @@
 #include "Geometry.hpp"
 #include "Globals.hpp"
 
+#include <glm/trigonometric.hpp>
 #include <math.h>
 #include <string>
 #include <vector>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #define LINE_FORBIDDENCE_PRECISION 100.f
 // In getExponentialAvergeDeviation(), use this value to punish distace
-#define DISTANCE_PENALTY_EXPONENT 2
+#define DISTANCE_PENALTY_EXPONENT 1.5
 // How many radius samples are taken (the greater the number, the more accurate, but slower it's going to be)
 //  Put line->lineData->size() for max accuracy
 #define MAX_RADIUS_SAMPLES line->lineData->size()
@@ -215,6 +219,7 @@ std::vector<Point> Geometry::genOptCircle(Point center, double radius, bool orde
     return opt;
 }
 
+
 std::vector<Point> Geometry::genOptLine(Point start, Point end){
     std::vector<Point> opt;
 
@@ -260,14 +265,16 @@ std::vector<Point> Geometry::genOptLine(Point start, Point end){
     return opt;
 }
 
+
 std::vector<Point> Geometry::genOptEllipse(){
     std::vector<Point> opt;
     return opt;
 }
 
-std::vector<Point> Geometry::genOptSine(Point start, Point end, double wavelength, double amplitude, double cycles, bool niceLooking){
-    std::vector<Point> opt;
-
+/** WARNING:
+* This fuction does not clamp the length of the sine wave between the start and end points. They are there to get the proper angle
+* of the wave. You have to input the correct number of cycles yourself to get the right length. */
+std::vector<Point> Geometry::genOptSine(Point start, Point end, double wavelength, double amplitude, double cycles, double phaseShift, bool niceLooking){
     /**************** Formula of a Sine Wave *****************
     * @p A amplitude
     * @p f cycles
@@ -277,56 +284,58 @@ std::vector<Point> Geometry::genOptSine(Point start, Point end, double wavelengt
     ** y(t) = A * sin(2 * PI * f * t + shift)
     *                         or...
     ** y(time) = amplitude * sin(2 * PI * cycles * time + phaseShift)
+    * P.S. This is wrong; it doesn't work.
     **********************************************************/
 
-    
+    // I love the internet so much
+    // https://gamedev.stackexchange.com/questions/121478/how-to-rotate-a-2d-line
 
+    std::vector<Point> opt;
+    int x, y, dx, dy, newX, newY;
+    double v = atan2(end.y - start.y, end.x - start.x) - (M_PI / 2);
 
-/* 
-    Vector p1 = new PVector(10,10);
-    PVector p2 = new PVector(100,100);
-
-    float gFreq = 2; // frequency
-    float gAmp = 50; // amplitude in pixels
-
-
-    void sineTo(PVector p1, PVector p2, float freq, float amp){
-    float d = PVector.dist(p1,p2);
-    float a = atan2(p2.y-p1.y,p2.x-p1.x);
-        translate(p1.x,p1.y);
-        rotate(a);
-        beginShape();
-        for (float i = 0; i <= d; i += 1) {
-            vertex(i,sin(i*TWO_PI*freq/d)*amp);
-        }
- */
-
-    // This should NOT have been this difficult to figure out.
-
-    // Create the actuall sine wave
-    double x, y;
-    double verticalShift = start.y, phaseShift = 7.;
-
-    // for(x = start.x; x < (wavelength * cycles) + start.x; ++x){
-    //     // y = amplitude * sin(2 * M_PI * (cycles / wavelength) * (x - start.x)) + start.y;
-    //     y = amplitude * sin(((2 * M_PI) * (x + phaseShift)) / wavelength) + verticalShift;
-    //     opt.push_back(Point(x, y));
-    // }
-
-    start.convCenter();
-    end.convCenter();
-
-    // Then change the angle of that sine wave
-    double v = atan2(end.y - start.y, end.x - start.x);
+    // Create the actual sine wave, then change the angle of that sine wave
     for(x = start.x; x < (wavelength * cycles) + start.x; ++x){
-        y = amplitude * sin(((2 * M_PI) * (x + phaseShift)) / wavelength) + verticalShift;
-        int newY = x *  cos(v)  + y * sin(v);
-        int newX = x * -sin(v)  + y * cos(v);
+        // Calculate y based on x, via the sine equation
+        y = amplitude * sin(((2 * M_PI) * (x + phaseShift)) / wavelength) + start.y;
+        
+        // Calculate how far off you are from the center
+        dx = x - start.x;
+        dy = y - start.y;
+        
+        // Rotate around the starting point
+        newX = dx * cos(v) - dy * sin(v) + start.x;
+        newY = dx * sin(v) + dy * cos(v) + start.y;
+
+        // Add that point to the new vector
         opt.push_back(Point(newX, newY));
     }
+    
+    // This should NOT have been this difficult to figure out.
+    /** //? This way works, so I want to keep it, but the other way is more efficent
+        double x, y;
+        double verticalShift = start.y;
 
+        double v = atan2(end.y - start.y, end.x - start.x) - (M_PI / 2);
+        
+        y = amplitude * sin(((2 * M_PI) * (start.x + phaseShift)) / wavelength) + verticalShift;
+        int newY = (start.x *  cos(v)) + (y * sin(v));
+        int newX = (start.x * -sin(v)) + (y * cos(v));
 
-    // Because that only generate one point per x, draw lines between the points for comparing
+        int xOffset = start.x - newX + 7;
+        int yOffset = start.y - newY;
+        
+
+        // Create the actual sine wave, then change the angle of that sine wave
+        for(x = start.x; x < (wavelength * cycles) + start.x; ++x){
+            y = amplitude * sin(((2 * M_PI) * (x + phaseShift)) / wavelength) + verticalShift;
+            int newY = (x *  cos(v)) + (y * sin(v));
+            int newX = (x * -sin(v)) + (y * cos(v));
+            opt.push_back(Point(newX + xOffset, newY + yOffset));
+        }
+    */
+
+    // Because that only generates one point per x, draw lines between the points
     //  (actually looks slightly worse when drawn with OpenGL this way)
     if (not niceLooking){
         std::vector<Point> tmpOpt = opt;
@@ -339,70 +348,9 @@ std::vector<Point> Geometry::genOptSine(Point start, Point end, double wavelengt
             // opt.push_back(*it);
         }
     }
-
-    /* supposed to draw a sine wave between 2 points
-    float v = atan2(end.y - start.y, end.x - start.x);
-    for(int i = start.x; i < (wavelength * cycles) + start.x; ++i){
-        int y = amplitude * sin(2 * M_PI * (cycles / wavelength) * (i - start.x) + 0) + start.y;
-        // sin(i / waveStretcher) * waveMultiplier;
-        // int y = sin(i / wavelength) * amplitude;
-        int rotatedY = i * cos(v)  + y * sin(v);
-        int x = i * -sin(v) + y * cos(v);
-        Point addMe;
-        opt.push_back(addMe.convTopLeft());
-    }
-    */
-
-    // float v = atan2(y2 - y1, x2 - x1);
-    // for(blabla){
-    //     calculate sinPosY from i
-    //     newSinPosY =    i*Cos(v)  + sinPosY*Sin(v);
-    //     sinPosX =    i*-Sin(v) + sinPosY*Cos(v));
-    //     add offset
-    //     render
-    // }
-
-
-
-    /* Aaaaaalmost works, but not quite, something's off...
-    cycles /= 2;
-    for(int x = start.x; x < (wavelength * cycles) + start.x; ++x)
-        opt.push_back(Point(x, amplitude * sin(2 * M_PI * (cycles / wavelength) * (x - start.x) + 0) + start.y));
-    */
-
-    /*
-    double angle = 0.0;
-    for(int x = start.x; x < (wavelength * cycles) + start.x; ++x){
-        opt.push_back(Point(x, int(amplitude * sin(angle) + start.y)));
-        angle += (2 * M_PI) / wavelength;
-    }
-    */
-
-    // for (int x = 0; x < wavelength; ++x){
-    //     auto y[wavelength] = amplitude * sin (2 * M_PI * (cycles / NUM_POINTS) * wavelength + 0);//  + ZERO_OFFSET;
-    //                                                       ^^^ f = 15 cycles / NUM_POINTS = 0.15 Hz
-    // }
-    // loop from y[0] to y[wav]
-
-
-
-    /* Some algorithm I found from TI that apparently they put in their graphing caclulators
-    int x = 0;
-    const short A = (1.975/2 * 32768); // (1.975/2 * 32768) = 0x7e66 -- this was origionally a short
-    short y[3] = {0, 0x1209, 0};       // (0.1409 * 32768)  = 0x1209 -- this was origionally a short
-    for(int i = 0; i < 40; i++){
-        y[0] = (((A * y[1]) >> 15) + ((A * y[1]) >> 15)) - y[2];
-        y[2] = y[1]; // y2 <–– y1
-        y[1] = y[0]; // y1 <–– y0
-        // output = y[0];
-        opt.push_back(Point(x, y[0]));
-        ++x;
-    }
-    */
-
-
     return opt;
 }
+
 
 double Geometry::getAccuracy(Line::Type bestGuess){
     switch(bestGuess){
@@ -410,10 +358,35 @@ double Geometry::getAccuracy(Line::Type bestGuess){
         case LINE_UNKNOWN:
         case LINE_MAKING:
         case LINE_REVOCATION:
+            return NAN;
         case LINE_VIGOR:
         {
-            // std::vector<Point> optSine = genOptSine(line->start, 6., 6.);
-            return NAN; // Fun note: breaking here instead of returning gives you an "Illegal instruction" error            
+            double detectedAmplitude, detectedWavelength, detectedCycles, detectedPhaseShift, maxAmpDev;
+            getSineData(detectedAmplitude, detectedWavelength, detectedCycles, detectedPhaseShift, maxAmpDev);
+            std::cout << g::getDebugCount() << ": " << std::fixed << std::setprecision(5)
+                    // << "Wavelength = " << wavelength << "\n"
+                    << "Detected Wavelength = " << detectedWavelength << "\n"
+                    // << "Amplitude = " << amplitude << "\n"
+                    << "Detected Amplitude = " << detectedAmplitude << '\n'
+                    // << "Cycles = " << cycles << '\n'
+                    << "Detected Cycles = " << detectedCycles << '\n'
+                    << "Detected Phase Shift = " << detectedPhaseShift << '\n'
+                    << "Detected Maximum Amplitude Deviation = " << maxAmpDev << '\n';
+
+            if(detectedAmplitude == NAN or detectedCycles == NAN or detectedWavelength == NAN or detectedPhaseShift == NAN)
+                return 0.;
+
+            std::vector<Point> optSine = genOptSine(line->start, line->end, detectedWavelength, detectedAmplitude, detectedCycles, detectedPhaseShift, true);
+            //                                                 neither is this value ||
+            //          For sine, this isn't always super accurate \/                \/
+            double answer = 100 - (getAverageDeviation(optSine) / 1.5);// - (maxAmpDev / 3);
+
+            logVal(getAverageDeviation(optSine))
+            logVal(maxAmpDev)
+            logVal(answer)
+
+            return answer;
+            // return answer < 0 ? 0 : answer; // If it's negative, just say 0.
         }
         case LINE_WARDING:
         {
@@ -443,47 +416,7 @@ double Geometry::getAccuracy(Line::Type bestGuess){
             break;
     }
 }
-// Finds the closest point in the list to what it's given
-std::pair<int, double> Geometry::findClosestPoint(Point target, std::vector<Point> comparator){
-    int index = 0;
-    double finalDist = 10000, current;
 
-    for (int i = 0; i < comparator.size(); ++i){
-        current = getDist(target, comparator[i]);
-        if (current < finalDist){
-            finalDist = current;
-            index = i;
-        }
-    }
-    // logVal(finalDist)
-    return std::pair<int, double>(index, finalDist);
-}
-// Gets the points furthest from each other in the vector
-std::pair<int, int> Geometry::findFurthestPoints(){
-    // I'm just going to assume it's at least vaugely a circle shape
-    int a, b, i = 0;
-
-    for (; i < line->lineData->size(); i += FIND_RADIUS_SLOW_EFFICENCY){
-
-    }
-
-    return std::pair<int, int>(a, b);
-}
-// Finds the furthest point in the list to what it's given
-std::pair<int, double> Geometry::findFurthestPoint(Point target, std::vector<Point> comparator){
-    int index = 0;
-    double finalDist = 0, current;
-
-    for (int i = 0; i < comparator.size(); ++i){
-        current = getDist(target, comparator[i]);
-        if (current > finalDist){
-            finalDist = current;
-            index = i;
-        }
-    }
-    // logVal(finalDist)
-    return std::pair<int, double>(index, finalDist);
-}
 
 double Geometry::getAverageRadius(bool efficent){
     std::vector<double> radii;
@@ -521,10 +454,10 @@ double Geometry::getAverageRadius(bool efficent){
 }
 
 Point Geometry::getCenter(double radius){
-    Point rightmost  = (*line->lineData)[getRightmostPoint()];
-    Point leftmost   = (*line->lineData)[getLeftmostPoint()];
-    Point topmost    = (*line->lineData)[getTopmostPoint()];
-    Point bottommost = (*line->lineData)[getBottommostPoint()];
+    Point rightmost  = (*line->lineData)[getRightmostPoint(*line->lineData)];
+    Point leftmost   = (*line->lineData)[getLeftmostPoint(*line->lineData)];
+    Point topmost    = (*line->lineData)[getTopmostPoint(*line->lineData)];
+    Point bottommost = (*line->lineData)[getBottommostPoint(*line->lineData)];
     Point rightSays (rightmost.x - radius, rightmost.y);
     Point leftSays  (leftmost.x  + radius, leftmost.y );
     Point topSays   (topmost.x   , topmost.y    + radius);
@@ -535,59 +468,8 @@ Point Geometry::getCenter(double radius){
     return avg;
 }
 
-double Geometry::getAverageDeviation(std::vector<Point> opt){
-    int i = 0;
-    double netDist = 0.f;
-    for(; i < line->lineData->size(); ++i){
-        netDist += fabs(findClosestPoint((*line->lineData)[i], opt).second);
-    }
-    // logVal(this->line->lineData->size())
-    // logVal(i)
-    // logVal(netDist)
-    // logVal(netDist / i)
-    return netDist / i; // The average distance of the closest points
-}
-// Exactly the same as getAverageDeviation(), but punishes distance from the line exponentially
-double Geometry::getExponentialAverageDeviation(std::vector<Point> opt){
-    int i = 0;
-    double netDist = 0.f;
-    for(; i < line->lineData->size(); ++i){
-        netDist += pow(fabs(findClosestPoint((*line->lineData)[i], opt).second), DISTANCE_PENALTY_EXPONENT);
-    }
-    // logVal(this->line->lineData->size())
-    // logVal(i)
-    // logVal(netDist)
-    // logVal(netDist / i)
-    return netDist / i; // The average distance of the closest points
-}
-
-double Geometry::getTotalDeviation(std::vector<Point> opt){
-    double netDist = 0.f;
-    for(int i = 0; i < line->lineData->size(); ++i){
-        netDist += findClosestPoint((*line->lineData)[i], opt).second;
-    }
-    // logVal(netDist)
-    return netDist;
-}
-
-std::pair<int, double> Geometry::getGreatestDeviation(std::vector<Point> opt){
-    double currentDist = 0.f, finalDist = 0.f;
-    int index = 0;
-
-    for(int i = 0; i < line->lineData->size(); ++i){
-        currentDist = findClosestPoint((*line->lineData)[i], opt).second;
-        if (currentDist > finalDist){
-            finalDist = currentDist;
-            index = i;
-        }
-    }
-
-    return std::pair<int, double>(index, finalDist);
-}
 // Guesses what type of line this Line is
 Line::Type Geometry::guessType(){
-
-    // return LINE_FORBIDDENCE; //! For debugging
 
     assert(line->isFinished and not line->isNull());
     if (line->lineData->size() == 1)
@@ -597,7 +479,7 @@ Line::Type Geometry::guessType(){
         return LINE_WARDING;
 
     // The length of the line of a sine wave is approx. sqrt(pow(amp, 2) + pow(wav / 4, 2))
-    else if (getDist(line->start, line->end) < getLineLength() / 1.5) // 1.5 is arbitrary)
+    else if (getDist(line->start, line->end) < getLineLength() / 1.1) // 1.1 is arbitrary, but pretty good
         return LINE_VIGOR;
 
     else if (isCloseEnough(getDist(line->start, line->end) / getLineLength(), 1.f, .3f))
@@ -629,109 +511,185 @@ Line::Type Geometry::identify(){
         return guessedType;
 }
 
-double Geometry::getAmplitude(){
-    
-    return 0;
-}
+// Returns true if the first hump goes up instead of down
+bool Geometry::getHumps(const std::vector<Point>& lineData, std::vector<int>& topHumps, std::vector<int>& bottomHumps){
+    int prevY, index = 0;
+    bool goesUpFirst = true;
+    auto itPrev = lineData.begin();
+    auto it = lineData.begin() + 1;
 
-double Geometry::getwavelength(){
-
-    return 0;
-}
-
-double Geometry::getLineLength(){
-    double total = 0.f;
-
-    for (int i = 1; i < line->lineData->size(); ++i)
-        total += getDist((*line->lineData)[i], (*line->lineData)[i - 1]);
-
-    return total + 1;
-}
-
-double Geometry::getAverage(const std::vector<double>& averagers){
-    double total = 0;
-    for (auto i: averagers)
-        total += i;
-    return total / averagers.size();
-}
-
-Point Geometry::getAverage(const std::vector<Point>& averagers){
-    Point total;
-    for (auto i: averagers){
-        total.x += i.x;
-        total.y += i.y;
-    }
-    return Point(total.x / averagers.size(), total.y / averagers.size());
-}
-
-double Geometry::getDist(Point a, Point b){
-    return sqrt(pow(b.x - a.x, 2) + pow(b.y - a.y, 2));
-    // return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
-}
-
-double Geometry::getSlope(Point a, Point b){
-    return (b.y - a.y) / (b.x - a.x);
-}
-
-bool Geometry::isCloseEnough(Point a, Point b, double threshold){
-    if (fabs(getDist(a, b)) < threshold)
-        return true;
-    else
-        return false;
-}
-
-bool Geometry::isCloseEnough(double a, double b, double threshold){
-    if (fabs(a - b) < threshold)
-        return true;
-    else 
-        return false;
-}
-
-int Geometry::getLeftmostPoint(){
-    int smallestX = 10000, index;
-    for(int i = 0; i < line->lineData->size(); ++i){
-        if ((*line->lineData)[i].x < smallestX){
-            smallestX = (*line->lineData)[i].x;
-            index = i;
+    // First, figure out if the sine is going up or down first
+    do{
+        // You're going up
+        if (it->y < itPrev->y){
+            prevY = 100000;
+            break;
+        }
+        
+        // You're going down
+        if (it->y > itPrev->y){
+            prevY = 0;
+            goesUpFirst = false;
+            // Starts looking for the lowest point first, instead of the highest point first
+            goto startGoingDown;
         }
     }
-    return index;
-}
+    while (itPrev == it);
 
-int Geometry::getRightmostPoint(){
-    int largestX = 0, index;
-    for(int i = 0; i < line->lineData->size(); ++i){
-        if ((*line->lineData)[i].x > largestX){
-            largestX = (*line->lineData)[i].x;
-            index = i;
+
+    // Go up until you start going down, and mark that index
+    // Then go down until you start going up, and mark that index
+    while (index < lineData.size() - 1){ 
+        while (lineData[index].y <= prevY){
+            prevY = lineData[index].y;
+            ++index;
+
+            if(index >= lineData.size())
+                return goesUpFirst;
         }
-    }
-    return index;
-}
 
-int Geometry::getTopmostPoint(){
-    int smallestY = 10000, index;
-    for(int i = 0; i < line->lineData->size(); ++i){
-        if ((*line->lineData)[i].y < smallestY){
-            smallestY = (*line->lineData)[i].y;
-            index = i;
+        // For robustness (i.e. if a point goes forward then immediately back)
+        if (lineData[index - 1].y >= lineData[index + 1].y)
+            topHumps.push_back(index - 1);
+
+
+        startGoingDown:
+        while (lineData[index].y >= prevY){
+            prevY = lineData[index].y;
+            ++index;
+
+            if(index >= lineData.size())
+                return goesUpFirst;
         }
+
+        // For robustness (i.e. if a point goes forward then immediately back)
+        if (lineData[index - 1].y <= lineData[index + 1].y)
+            bottomHumps.push_back(index - 1);
     }
-    return index;
+
+    // The logic should never get to this point
+    assert(false);
+    return goesUpFirst;
 }
 
-int Geometry::getBottommostPoint(){
-    int largestY = 0, index;
-    for(int i = 0; i < line->lineData->size(); ++i){
-        if ((*line->lineData)[i].y > largestY){
-            largestY = (*line->lineData)[i].y;
-            index = i;
+#define LINEDATA (*line->lineData)
+
+void Geometry::getSineData(double& amplitude, double& wavelength, double& cycles, double& phaseShift, double& maxAmpDev){
+   
+    rotateStraight(*line);
+
+    // todo clamp between start and end distances somehow
+
+    /** IMPORTANT: Remember that origin is the top left, so y is inverted from intuition  */
+
+    std::vector<int> topHumps, bottomHumps;
+
+    bool goesUpFirst = getHumps(LINEDATA, topHumps, bottomHumps);
+
+    logVal(topHumps.size())
+    logVal(bottomHumps.size())
+
+    if (not topHumps.size() or not bottomHumps.size()){
+        amplitude  = NAN;
+        wavelength = NAN;
+        cycles     = NAN;
+        phaseShift = NAN;
+        maxAmpDev  = NAN;
+        return;
+    }
+
+    //* Calculate Cycles
+        // The meat of the matter: the number of points from the first hump to the last hump
+        // Get the indecies of the first and last humps
+        int meatCountBegin = (goesUpFirst ? topHumps.front(): bottomHumps.front());
+        int meatCountEnd   = (topHumps.back() > bottomHumps.back() ? topHumps.back(): bottomHumps.back());
+        int meatCount      = meatCountEnd - meatCountBegin;
+
+        double totalHumps = double(topHumps.size() + bottomHumps.size());
+
+        // How many points aren't accounted for in the meat
+        double totalFractionalCyclePoints = double(LINEDATA.size() - meatCount);
+
+        // How many points are in each cycles, on average?
+        double averagePointsPerCycle = meatCount / totalHumps;
+
+        // How many partial cycles (beginning and the ending) are there?
+        double fractionalCycles = totalFractionalCyclePoints / averagePointsPerCycle;
+
+        cycles = (totalHumps + fractionalCycles) / 2;
+
+
+    //* Calculate Phase Shift
+        int preCyclePoints  = meatCountBegin;
+        int postCyclePoints = LINEDATA.size() - meatCountEnd;
+
+        // if ((preCyclePoints + postCyclePoints) )
+
+        double preCycles  = double(preCyclePoints)  / double(averagePointsPerCycle);
+        double postCycles = double(postCyclePoints) / double(averagePointsPerCycle);
+
+        phaseShift = preCycles >= 1 ? --preCycles: preCycles;
+
+        // Since we're calculating each induvidual hump seperately, we need to detect if the 
+        //  partial part is partially going up or down. The sign represents the slope of the line.
+        // if (not goesUpFirst)
+        //     phaseShift *= -1;
+
+        if (not goesUpFirst){
+            phaseShift += averagePointsPerCycle * 2;
         }
-    }
-    return index;
+
+
+    //* Calculate Amplitude
+        // Calculate out all the amplitudes
+        double topHumpAverageAmp = 0, bottomHumpAverageAmp = 0, averageAmp = 0;
+        int    topHumpTotalAmp   = 0, bottomHumpTotalAmp = 0  , totalAmp   = 0;
+
+        // Calculate the top amplitudes
+        // for (auto i: topHumps){
+        //     topHumpTotalAmp += LINEDATA[i].y - line->start.y;
+        // }
+
+        // Calculate the bottom amplitudes
+        // for (auto i: bottomHumps){
+        //     bottomHumpTotalAmp += LINEDATA[i].y - line->start.y;
+        // }
+
+        // logVal(totalHumps)
+
+        double currentAmp = -1., penultimateAmpDev = 0.;
+        for (int i = 0; i < totalHumps; i += 2){
+            currentAmp = bottomHumps[i] - topHumps[i];
+
+            totalAmp += currentAmp;
+            if (currentAmp > maxAmpDev){
+                // if (currentAmp != -1.)
+                    // penultimateAmpDev = maxAmpDev;
+                maxAmpDev = currentAmp;
+            }
+        }
+
+        // Something to add for the future: add top vs bottom average amplitude comparison into the main algorithm
+
+        // averageAmp = (topHumpTotalAmp + bottomHumpTotalAmp) /  totalHumps;
+        averageAmp = double(totalAmp) / double(totalHumps);
+        amplitude = fabs(averageAmp); // abs() here shouldn't be necissary.
+
+
+    //* Calculate Maximum Amplitude Deviation
+        // logVal(maxAmpDev)
+        // logVal(penultimateAmpDev)
+
+        maxAmpDev = maxAmpDev - amplitude;
+
+
+    //* Calculate Wavelength
+        wavelength = LINEDATA.size() / cycles;
 }
 
-double Geometry::clampToPercentage(double value, double perfect, double acceptableCutoff, double failureCutoff){
+#undef LINEDATA
 
-    return 6.;
+
+Geometry::~Geometry(){
+    // delete this->line;
 }

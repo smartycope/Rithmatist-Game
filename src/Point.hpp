@@ -23,12 +23,12 @@ public:
         isNull(false)
         {};
 
-    void print();
+    void print(std::string name = "");
     std::pair<float, float> getVector();
     std::pair<float, float> getUnnormalizedVector();
     Point convCenter();
     Point convTopLeft();
 
-    // bool operator==(const Point& r);
+    bool operator==(const Point& r);
     bool operator!=(const Point& r);
 };

@@ -6,8 +6,15 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_C_COMPILER clang)
+
+# set(CMAKE_CXX_COMPILER g++)
+# set(CMAKE_C_COMPILER gcc)
+
 #set(CMAKE_CXX_FLAGS "-lpthread -lm")
-set(CMAKE_CXX_FLAGS "-pthread -Wdeprecated-enum-enum-conversion")
+set(CMAKE_CXX_FLAGS "-pthread")
+
+
+add_compile_options(-Wno-deprecated-enum-enum-conversion -Wno-comment)
 
 set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 

@@ -1,4 +1,5 @@
 #include "Point.hpp"
+#include "Globals.hpp"
 #include <iterator>
 
 std::pair<float, float> Point::getVector(){
@@ -7,8 +8,11 @@ std::pair<float, float> Point::getVector(){
     return tmp2;
 }
 
-void Point::print(){
-    std::cout << x << ", " << y;
+void Point::print(std::string name){
+    if (name.size())
+        std::cout << g::getDebugCount() << ": " << name << " = (" << x << ", " << y << ")\n";
+    else
+        std::cout << g::getDebugCount() << ": (" << x << ", " << y << ")\n";
 }
 
 Point Point::convCenter(){
@@ -26,9 +30,9 @@ std::pair<float, float> Point::getUnnormalizedVector(){
     return tmp2;
 }
 
-// bool Point::operator==(const Point& r){
-//     return this->x == r.x and this->y == r.y;
-// }
+bool Point::operator==(const Point& r){
+    return this->x == r.x and this->y == r.y;
+}
 
 bool Point::operator!=(const Point& r){
     return this->x != r.x or this->y != r.y;

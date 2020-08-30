@@ -10,17 +10,6 @@
 #include "Globals.hpp"
 
 // Nuklear includes
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
-#include "nuklear.h"
-// #include "nuklear_sdl_gl3.h"
-// #include "../style.c"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -31,9 +20,23 @@
 #include <limits.h>
 #include <time.h>
 
-#include <GL/glew.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
+#ifndef NUKLEAR_INCLUDED
+    #define NUKLEAR_INCLUDED
+    #define NK_INCLUDE_FIXED_TYPES
+    #define NK_INCLUDE_STANDARD_IO
+    #define NK_INCLUDE_STANDARD_VARARGS
+    #define NK_INCLUDE_DEFAULT_ALLOCATOR
+    #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+    #define NK_INCLUDE_FONT_BAKING
+    #define STB_TRUETYPE_IMPLEMENTATION
+    // #define STB_RECT_PACK_VERSION
+    #define STB_RECT_PACK_IMPLEMENTATION
+    #define NK_INCLUDE_DEFAULT_FONT
+    // #define NK_IMPLEMENTATION
+    // #define NK_SDL_GL3_IMPLEMENTATION
+    #include "dep/nuklear.h"
+    // #include "nuklear_sdl_gl3.h"
+#endif // NUKLEAR_INCLUDED
 
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
@@ -54,17 +57,20 @@ private:
     SDL_Window* window;
     SDL_GLContext context;
     GLuint vao;
+    GLuint linesVbo;
     GLuint shaderProgram;
     struct nk_context* ctx;
-    // struct nk_font_atlas *atlas;
+    struct nk_font_atlas *atlas;
 
     void init(std::string title);
     void setSDL_GLAttributes();
     void initLines();
+    void connectLines();
     void createLines();
     void updateLines();
     void initGLEW();
     void initSDL(std::string title);
+    void initNuklear();
     void createVAO();
     GLuint createVertexShader();
     GLuint createFragmentShader();
@@ -73,11 +79,28 @@ private:
     void addManualLines(Player player);
     void run();
     void draw(bool points = false);
-    void drawNuklear();
+    void createOptionsMenu();
+    void drawOptionsMenu();
+    int  drawPauseMenu(bool &letItResume, bool& drawMenu);
+    void closeMenu(bool& inMenu);
     void cleanup(GLuint vertexShader, GLuint fragmentShader);
     void updateMouse(int x, int y);
+    void getGlState();
     
 public:
+    enum Mode {
+        TUTORIAL,
+        PASSIVE_WATCH,
+        // EXAMPLE_DUELS,
+        // SHOW_NAMED_DEFENSES,
+        PRACTICE,
+        SURVIVAL,
+        SINGLEPLAYER,
+        MULTIPLAYER
+    } mode;
+
+    int analyze = false, bindPointHelp = false, autocorrect = false; // These are bools
+
     unsigned int width, height;
     Point mouseLoc;
 
