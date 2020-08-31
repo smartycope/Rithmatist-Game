@@ -1,13 +1,11 @@
 #include "Geometry.hpp"
-#include "Globals.hpp"
+// #include "Globals.hpp"
+// #include "StdMathFunc.hpp"
 
-#include <glm/trigonometric.hpp>
 #include <math.h>
 #include <string>
 #include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+
 
 #define LINE_FORBIDDENCE_PRECISION 100.f
 // In getExponentialAvergeDeviation(), use this value to punish distace
@@ -20,17 +18,6 @@
 #define OFFSET_CHECK_DISTANCE 10
 // Defines the step of the slow way of calculating getFurthestPoints() (smaller is slower, but more accurate)
 #define FIND_RADIUS_SLOW_EFFICENCY 1
-
-
-// This is to be able to have a reversed for-based range loop
-template <typename T>
-struct reversion_wrapper { T& iterable; };
-template <typename T>
-auto begin (reversion_wrapper<T> w) { return std::rbegin(w.iterable); }
-template <typename T>
-auto end (reversion_wrapper<T> w) { return std::rend(w.iterable); }
-template <typename T>
-reversion_wrapper<T> reverse (T&& iterable) { return { iterable }; }
 
 
 // Generate vectors filled with the points required to draw the "perfect" shape
@@ -379,9 +366,9 @@ double Geometry::getAccuracy(Line::Type bestGuess){
             std::vector<Point> optSine = genOptSine(line->start, line->end, detectedWavelength, detectedAmplitude, detectedCycles, detectedPhaseShift, true);
             //                                                 neither is this value ||
             //          For sine, this isn't always super accurate \/                \/
-            double answer = 100 - (getAverageDeviation(optSine) / 1.5);// - (maxAmpDev / 3);
+            double answer = 100 - (getAverageDeviation(optSine, *line->lineData) / 1.5);// - (maxAmpDev / 3);
 
-            logVal(getAverageDeviation(optSine))
+            logVal(getAverageDeviation(optSine, *line->lineData))
             logVal(maxAmpDev)
             logVal(answer)
 
@@ -395,7 +382,7 @@ double Geometry::getAccuracy(Line::Type bestGuess){
 
             std::vector<Point> optCircle = genOptCircle(center, radius, false);
 
-            double answer = 100 - getAverageDeviation(optCircle) - (getGreatestDeviation(optCircle).second * 2);
+            double answer = 100 - getAverageDeviation(optCircle, *line->lineData) - (getGreatestDeviation(optCircle, *line->lineData).second * 2);
 
             return answer < 0 ? 0 : answer; // If it's negative, just say 0.
         }
@@ -408,7 +395,7 @@ double Geometry::getAccuracy(Line::Type bestGuess){
             // logVal(getGreatestDeviation(optLine).second)
             // logVal(((getExponentialAverageDeviation(optLine) * -1) - getGreatestDeviation(optLine).second) * -1)
 
-            double answer = 100 - getExponentialAverageDeviation(optLine) - (getGreatestDeviation(optLine).second * 2);
+            double answer = 100 - getExponentialAverageDeviation(optLine, *line->lineData, DISTANCE_PENALTY_EXPONENT) - (getGreatestDeviation(optLine, *line->lineData).second * 2);
 
             return answer < 0 ? 0 : answer; // If it's negative, just say 0. 
         }
@@ -428,6 +415,7 @@ double Geometry::getAverageRadius(bool efficent){
         auto sampler = line->lineData->begin();
         auto antiSampler = line->lineData->begin() + (lineData->size() / 2);
 
+        //todo this doesn't work...
         while (samples){
             double finalDist = getDist(*sampler, *antiSampler);
 
@@ -450,7 +438,7 @@ double Geometry::getAverageRadius(bool efficent){
             radii.push_back(findFurthestPoint(*it, *line->lineData).second / 2);
     }
 
-    return getAverage(radii);
+    return getAverage<double>(radii);
 }
 
 Point Geometry::getCenter(double radius){
@@ -475,14 +463,14 @@ Line::Type Geometry::guessType(){
     if (line->lineData->size() == 1)
         return LINE_DOT;
 
-    else if (getDist(line->start, line->end) < getLineLength() / 8) // 8 is arbitrary
+    else if (getDist(line->start, line->end) < getLineLength(*this->line) / 8) // 8 is arbitrary
         return LINE_WARDING;
 
     // The length of the line of a sine wave is approx. sqrt(pow(amp, 2) + pow(wav / 4, 2))
-    else if (getDist(line->start, line->end) < getLineLength() / 1.1) // 1.1 is arbitrary, but pretty good
+    else if (getDist(line->start, line->end) < getLineLength(*this->line) / 1.1) // 1.1 is arbitrary, but pretty good
         return LINE_VIGOR;
 
-    else if (isCloseEnough(getDist(line->start, line->end) / getLineLength(), 1.f, .3f))
+    else if (isCloseEnough<double>(getDist(line->start, line->end) / getLineLength(*line), 1., .3))
         return LINE_FORBIDDENCE;
 
     else if (false)
@@ -509,67 +497,6 @@ Line::Type Geometry::identify(){
         return LINE_UNKNOWN;
     else
         return guessedType;
-}
-
-// Returns true if the first hump goes up instead of down
-bool Geometry::getHumps(const std::vector<Point>& lineData, std::vector<int>& topHumps, std::vector<int>& bottomHumps){
-    int prevY, index = 0;
-    bool goesUpFirst = true;
-    auto itPrev = lineData.begin();
-    auto it = lineData.begin() + 1;
-
-    // First, figure out if the sine is going up or down first
-    do{
-        // You're going up
-        if (it->y < itPrev->y){
-            prevY = 100000;
-            break;
-        }
-        
-        // You're going down
-        if (it->y > itPrev->y){
-            prevY = 0;
-            goesUpFirst = false;
-            // Starts looking for the lowest point first, instead of the highest point first
-            goto startGoingDown;
-        }
-    }
-    while (itPrev == it);
-
-
-    // Go up until you start going down, and mark that index
-    // Then go down until you start going up, and mark that index
-    while (index < lineData.size() - 1){ 
-        while (lineData[index].y <= prevY){
-            prevY = lineData[index].y;
-            ++index;
-
-            if(index >= lineData.size())
-                return goesUpFirst;
-        }
-
-        // For robustness (i.e. if a point goes forward then immediately back)
-        if (lineData[index - 1].y >= lineData[index + 1].y)
-            topHumps.push_back(index - 1);
-
-
-        startGoingDown:
-        while (lineData[index].y >= prevY){
-            prevY = lineData[index].y;
-            ++index;
-
-            if(index >= lineData.size())
-                return goesUpFirst;
-        }
-
-        // For robustness (i.e. if a point goes forward then immediately back)
-        if (lineData[index - 1].y <= lineData[index + 1].y)
-            bottomHumps.push_back(index - 1);
-    }
-
-    // The logic should never get to this point
-    assert(false);
-    return goesUpFirst;
 }
 
 #define LINEDATA (*line->lineData)

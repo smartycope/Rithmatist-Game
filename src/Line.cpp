@@ -141,19 +141,19 @@ std::vector<float>* Line::update(Color playersColor, bool isDot){
 
     if(!(isFinished) and (vertices->size() != (lineData->size() * 6))){
         for(auto it = lineData->begin() + (vertices->size() / 6); it != lineData->end(); ++it){
-            addVertices(it->getVector());
+            addVertices(getVector(*it));
         }
     }
     else if (isFinished){
         // addVertices(start.getVector());
         if (lineData->size() > 1){
             for(auto it = lineData->begin() + (vertices->size() / 6); it < lineData->end(); ++it){
-                addVertices(it->getVector());
+                addVertices(getVector(*it));
             }
         }
         // size == 1
         else if(lineData->size()){
-            addVertices(start.getVector());
+            addVertices(getVector(start));
             // addVertices(Point(start.x    , start.y + 1).getVector());
             // addVertices(Point(start.x + 1, start.y + 1).getVector());
             // addVertices(Point(start.x + 1, start.y    ).getVector());
@@ -203,7 +203,7 @@ void Line::reUpdate(){
 
     // Becuase things can't just be easy...
     for(int i = 0; i < lineData->size(); ++i)
-        addVertices((*lineData)[i].getVector());
+        addVertices(getVector((*lineData)[i]));
 
     // if (lineData->size())
         // for(auto it: *lineData)
@@ -221,8 +221,8 @@ std::vector<float> Line::reUpdate(std::vector<Point> line, const Color& color){
 
     // Becuase things can't just be easy...
     for(int i = 0; i < line.size(); ++i){
-        returnMe.push_back(line[i].getVector().first);
-        returnMe.push_back(line[i].getVector().second);
+        returnMe.push_back(getVector(line[i]).first);
+        returnMe.push_back(getVector(line[i]).second);
         returnMe.push_back(color.r);
         returnMe.push_back(color.g);
         returnMe.push_back(color.b);

@@ -12,6 +12,7 @@ set(CMAKE_C_COMPILER clang)
 
 #set(CMAKE_CXX_FLAGS "-lpthread -lm")
 set(CMAKE_CXX_FLAGS "-pthread")
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 
 add_compile_options(-Wno-deprecated-enum-enum-conversion -Wno-comment)
@@ -51,6 +52,7 @@ set(SRC_LIST
     ${CMAKE_SOURCE_DIR}/src/Arena.cpp
     ${CMAKE_SOURCE_DIR}/src/Gui.cpp
     ${CMAKE_SOURCE_DIR}/src/Line.cpp
+    ${CMAKE_SOURCE_DIR}/src/StdMathFunc.cpp
     ${CMAKE_SOURCE_DIR}/src/Geometry.cpp
     ${CMAKE_SOURCE_DIR}/src/Globals.cpp
     ${CMAKE_SOURCE_DIR}/src/Point.cpp

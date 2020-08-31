@@ -24,10 +24,6 @@ private:
     // Get the most likely center based on the radius of the circle
     Point getCenter(double radius);
 
-    // Returns true if the first hump goes up instead of down
-    bool getHumps(const std::vector<Point>& lineData, std::vector<int>& topHumps, std::vector<int>& bottomHumps);
-
-
 public:
     Geometry():        line(nullptr)     {}; // only use with generator functions
     Geometry(Line* l): line(l)           {};

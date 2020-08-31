@@ -1,17 +1,21 @@
 #include "StdMathFunc.hpp"
+#include "Globals.hpp"
+#include "Point.hpp"
 
 #include <math.h>
+#include <glm/trigonometric.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-
-template <class T>
+template <typename T>
 T getMax (T a, T b) {
   T result;
   result = (a > b) ? a: b;
   return (result);
 }
 
-
-template <class T>
+template <typename T>
 T getMin (T a, T b){
   T result;
   result = (a < b) ? a: b;
@@ -19,21 +23,23 @@ T getMin (T a, T b){
 }
 
 
-double getLineLength(std::vector<Point> data){
+double getLineLength(const Line& lucy){
     double total = 0.f;
 
-    for (int i = 1; i < line->lineData->size(); ++i)
-        total += getDist((*line->lineData)[i], (*line->lineData)[i - 1]);
+    for (int i = 1; i < lucy.lineData->size(); ++i)
+        total += getDist((*lucy.lineData)[i], (*lucy.lineData)[i - 1]);
 
     return total + 1;
 }
 
-template <class T>
-double getAverage(const std::vector<T>& averagers){
-    T total = 0;
-    for (auto i: averagers)
-        total += i;
-    return total / T(averagers.size());
+
+double getLineLength(std::vector<Point> data){
+    double total = 0.f;
+
+    for (int i = 1; i < data.size(); ++i)
+        total += getDist(data[i], data[i - 1]);
+
+    return total + 1;
 }
 
 
@@ -63,12 +69,6 @@ double getSlope(Point a, Point b, bool giveRadians){
     // You both suck.
     // return (double(b.y) - double(a.y)) / (double(b.x) - double(a.x)); // The traditional slope equation
     // return (double(a.y) - double(b.y)) / (double(b.x) - double(a.x)); // The slope equation for origin at top left corner
-}
-
-
-template <class T>
-bool isCloseEnough(T a, T b, T threshold){
-    return (fabs(a - b) < threshold) ? true: false;
 }
 
 
@@ -125,13 +125,12 @@ int getBottommostPoint(std::vector<Point> data){
     return index;
 }
 
-
 // Gets the points furthest from each other in the vector
-std::pair<int, int> findFurthestPoints(std::vector<Point> data){
+std::pair<int, int> findFurthestPoints(std::vector<Point> data, int efficency){
     // I'm just going to assume it's at least vaugely a circle shape
     int a, b, i = 0;
 
-    for (; i < line->lineData->size(); i += FIND_RADIUS_SLOW_EFFICENCY){
+    for (; i < data.size(); i += efficency){
 
     }
 
@@ -174,10 +173,10 @@ std::pair<int, double> findClosestPoint(Point target, std::vector<Point> compara
 double getAverageDeviation(std::vector<Point> opt, std::vector<Point> subOpt){
     int i = 0;
     double netDist = 0.f;
-    for(; i < line->lineData->size(); ++i){
-        netDist += fabs(findClosestPoint((*line->lineData)[i], opt).second);
+    for(; i < subOpt.size(); ++i){
+        netDist += fabs(findClosestPoint(subOpt[i], opt).second);
     }
-    // logVal(this->line->lineData->size())
+    // logVal(this->subOpt.size())
     // logVal(i)
     // logVal(netDist)
     // logVal(netDist / i)
@@ -185,13 +184,13 @@ double getAverageDeviation(std::vector<Point> opt, std::vector<Point> subOpt){
 }
 
 // Exactly the same as getAverageDeviation(), but punishes distance from the line exponentially
-double getExponentialAverageDeviation(std::vector<Point> opt, double exp){
+double getExponentialAverageDeviation(std::vector<Point> opt, std::vector<Point> subOpt, double exp){
     int i = 0;
     double netDist = 0.f;
-    for(; i < line->lineData->size(); ++i){
-        netDist += pow(fabs(findClosestPoint((*line->lineData)[i], opt).second), DISTANCE_PENALTY_EXPONENT);
+    for(; i < subOpt.size(); ++i){
+        netDist += pow(fabs(findClosestPoint(subOpt[i], opt).second), exp);
     }
-    // logVal(this->line->lineData->size())
+    // logVal(this->subOpt.size())
     // logVal(i)
     // logVal(netDist)
     // logVal(netDist / i)
@@ -199,22 +198,22 @@ double getExponentialAverageDeviation(std::vector<Point> opt, double exp){
 }
 
 
-double getTotalDeviation(std::vector<Point> opt){
+double getTotalDeviation(std::vector<Point> opt, std::vector<Point> subOpt){
     double netDist = 0.f;
-    for(int i = 0; i < line->lineData->size(); ++i){
-        netDist += findClosestPoint((*line->lineData)[i], opt).second;
+    for(int i = 0; i < subOpt.size(); ++i){
+        netDist += findClosestPoint(subOpt[i], opt).second;
     }
     // logVal(netDist)
     return netDist;
 }
 
 
-std::pair<int, double> getGreatestDeviation(std::vector<Point> opt){
+std::pair<int, double> getGreatestDeviation(std::vector<Point> opt, std::vector<Point> subOpt){
     double currentDist = 0.f, finalDist = 0.f;
     int index = 0;
 
-    for(int i = 0; i < line->lineData->size(); ++i){
-        currentDist = findClosestPoint((*line->lineData)[i], opt).second;
+    for(int i = 0; i < subOpt.size(); ++i){
+        currentDist = findClosestPoint(subOpt[i], opt).second;
         if (currentDist > finalDist){
             finalDist = currentDist;
             index = i;
@@ -330,3 +329,66 @@ void rotateStraight(Line& lucy, bool isSine){
         rotate(lucy, -averageTopHumpSlope, false);
     }
 }
+
+// Returns true if the first hump goes up instead of down
+bool getHumps(const std::vector<Point>& lineData, std::vector<int>& topHumps, std::vector<int>& bottomHumps){
+    int prevY, index = 0;
+    bool goesUpFirst = true;
+    auto itPrev = lineData.begin();
+    auto it = lineData.begin() + 1;
+
+    // First, figure out if the sine is going up or down first
+    do{
+        // You're going up
+        if (it->y < itPrev->y){
+            prevY = 100000;
+            break;
+        }
+        
+        // You're going down
+        if (it->y > itPrev->y){
+            prevY = 0;
+            goesUpFirst = false;
+            // Starts looking for the lowest point first, instead of the highest point first
+            goto startGoingDown;
+        }
+    }
+    while (itPrev == it);
+
+
+    // Go up until you start going down, and mark that index
+    // Then go down until you start going up, and mark that index
+    while (index < lineData.size() - 1){ 
+        while (lineData[index].y <= prevY){
+            prevY = lineData[index].y;
+            ++index;
+
+            if(index >= lineData.size())
+                return goesUpFirst;
+        }
+
+        // For robustness (i.e. if a point goes forward then immediately back)
+        if (lineData[index - 1].y >= lineData[index + 1].y)
+            topHumps.push_back(index - 1);
+
+
+        startGoingDown:
+        while (lineData[index].y >= prevY){
+            prevY = lineData[index].y;
+            ++index;
+
+            if(index >= lineData.size())
+                return goesUpFirst;
+        }
+
+        // For robustness (i.e. if a point goes forward then immediately back)
+        if (lineData[index - 1].y <= lineData[index + 1].y)
+            bottomHumps.push_back(index - 1);
+    }
+
+    // The logic should never get to this point
+    assert(false);
+    return goesUpFirst;
+}
+
+#include "StdMathFunc.tcc"

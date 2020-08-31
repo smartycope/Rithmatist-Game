@@ -46,3 +46,5 @@ Examples/Examples/Test
 bin/
 THANKS.md
 .vscode
+src/Nuklear.cpp.bak
+src/Nuklear.hpp.bak

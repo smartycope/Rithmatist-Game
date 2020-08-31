@@ -52,7 +52,7 @@
 
 void Gui::printMouseLoc(){
     std::cout << "Mouse is at ";
-    mouseLoc.print();
+    print(mouseLoc);
     std::cout << std::endl;
 }
 
